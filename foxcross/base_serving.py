@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 import aiofiles
 from starlette.applications import Starlette
@@ -76,12 +76,16 @@ class ModelServing(Starlette):
         """Hook to load a model or models"""
         pass
 
-    def predict(self, data: dict):
+    def predict(self, data: Dict) -> Any:
+        """
+        Method to define how the model performs a prediction.
+        Must return JSON serializable data
+        """
         raise NotImplementedError(
             "You must implement your model serving's predict method"
         )
 
-    async def _read_test_data(self):
+    async def _read_test_data(self) -> Dict:
         async with aiofiles.open(self.test_data_path, mode="rb") as f:
             contents = await f.read()
         try:
