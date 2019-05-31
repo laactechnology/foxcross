@@ -76,3 +76,4 @@ node_modules/
 .pytest_cache/
 
 .python-version
+/foxcross.egg-info/
