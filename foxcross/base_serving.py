@@ -13,6 +13,7 @@ from starlette.responses import PlainTextResponse
 from starlette.templating import Jinja2Templates
 
 from .enums import MediaTypes
+from .exceptions import BadDataFormat
 
 try:
     import ujson as json
@@ -69,7 +70,7 @@ class ModelServing(Starlette):
             self.add_middleware(GZipMiddleware)
         if redirect_https is True:
             self.add_middleware(HTTPSRedirectMiddleware)
-        self._accept_types = [
+        self._media_types = [
             MediaTypes.ANY.value,
             MediaTypes.ANY_APP.value,
             MediaTypes.JSON.value,
@@ -99,21 +100,28 @@ class ModelServing(Starlette):
             )
 
     async def _predict_endpoint(self, request: Request) -> JSONResponse:
-        # TODO: finish endpoint
         if request.method == "HEAD":
             return JSONResponse()
-        return JSONResponse({"message": "we're good"})
+        self._validate_http_headers(request, "content-type", self._media_types, 415)
+        self._validate_http_headers(request, "accept", self._media_types, 406)
+        json_data = await request.json()
+        try:
+            results = self.predict(json_data)
+        except BadDataFormat as exc:
+            logger.warning(f"Bad data format inputted to the predict endpoint: {exc}")
+            raise HTTPException(status_code=400, detail=str(exc))
+        return self._get_json_response(results)
 
     async def _predict_test_endpoint(self, request: Request) -> JSONResponse:
-        self._validate_http_headers(request, "accept", self._accept_types, 406)
+        self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        result = self.predict(test_data)
-        return JSONResponse(json.dumps(result))
+        results = self.predict(test_data)
+        return self._get_json_response(results)
 
     async def _input_format_endpoint(self, request: Request) -> JSONResponse:
-        self._validate_http_headers(request, "accept", self._accept_types, 406)
+        self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        return JSONResponse(json.dumps(test_data))
+        return self._get_json_response(test_data)
 
     @staticmethod
     def _validate_http_headers(
@@ -133,3 +141,12 @@ class ModelServing(Starlette):
             )
             logger.warning(err_msg)
             raise HTTPException(status_code=invalid_status_code, detail=err_msg)
+
+    @staticmethod
+    def _get_json_response(data: Any) -> JSONResponse:
+        try:
+            return JSONResponse(json.dumps(data))
+        except TypeError as exc:
+            raise HTTPException(
+                status_code=500, detail=f"Error trying to serialize data to JSON: {exc}"
+            )
