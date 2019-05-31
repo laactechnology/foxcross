@@ -3,7 +3,7 @@ from typing import Dict, Union
 
 from starlette.exceptions import HTTPException
 
-from .base_serving import ModelServing
+from .serving import ModelServing
 
 logger = logging.getLogger(__name__)
 try:

@@ -16,7 +16,7 @@ Installation using `pip`:
 pip install foxcross
 ```
 
-Create some test data and a simple model to be served:
+Create some test data and a simple model in the same directory to be served:
 
 `data.json`
 ```json
@@ -25,16 +25,17 @@ Create some test data and a simple model to be served:
 
 `models.py`
 ```python
-import foxcross
+from foxcross.runner import run_model_serving
+from foxcross.serving import ModelServing
 
-class AddOneModel(foxcross.ModelServing):
+class AddOneModel(ModelServing):
     test_data_path = "data.json"
     
     def predict(self, data):
         return [x + 1 for x in data]
 
 if __name__ == "__main__":
-    foxcross.run_model_serving()
+    run_model_serving()
 ```
 
 Run the model locally:
@@ -42,5 +43,5 @@ Run the model locally:
 python models.py
 ```
 
-Navigate to `localhost:8000/predict-test/` and you should see the list incremented by 1.
+Navigate to `localhost:8000/predict-test/`, and you should see the list incremented by 1.
 You can visit `localhost:8000/` to see all the available routes for your model.

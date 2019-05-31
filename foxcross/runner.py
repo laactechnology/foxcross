@@ -8,14 +8,14 @@ from slugify import slugify
 from starlette.applications import Starlette
 from starlette.types import ASGIApp
 
-from .base_serving import (
+from .exceptions import NoServingModelsFoundError
+from .pandas_serving import DataFrameModelServing
+from .serving import (
     ModelServing,
     _index_endpoint,
     _kubernetes_liveness_endpoint,
     _kubernetes_readiness_endpoint,
 )
-from .exceptions import NoServingModelsFoundError
-from .pandas_serving import DataFrameModelServing
 
 EXCLUDED_SERVING_CLASSES = [ModelServing, DataFrameModelServing]
 logger = logging.getLogger(__name__)

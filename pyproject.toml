@@ -4,8 +4,8 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "foxcross"
-version = "0.2.0"
-description = "Asyncio serving for data science models"
+version = "0.3.0"
+description = "AsyncIO serving for data science models"
 authors = ["Steven Pate <steven@laac.io>"]
 license = "BSD-3-Clause"
 readme = "README.md"
@@ -42,8 +42,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.6"
 starlette = "^0.12.0"
-python-slugify = "^3.0"
-unidecode = "^1.0"
+python-slugify = {version = "^3.0", extras = ["unidecode"]}
 uvicorn = "^0.7.1"
 aiofiles = "^0.4.0"
 jinja2 = "^2.10"
