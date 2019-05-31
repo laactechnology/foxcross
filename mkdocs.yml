@@ -2,7 +2,7 @@ site_name: Foxcross
 site_description: Asyncio serving for data science models
 
 theme:
-  name: material
+  name: 'material'
 
 repo_name: laactech/foxcross
 repo_url: https://github.com/laactech/foxcross
