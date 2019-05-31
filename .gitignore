@@ -78,3 +78,4 @@ node_modules/
 .python-version
 /foxcross.egg-info/
 /site/
+/dist/
