@@ -3,3 +3,5 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://github.com/laactech/foxcross/blob/master/LICENSE.md)
 
 Asyncio serving for data science models
+
+**Documentation**: https://www.foxcross.dev/
