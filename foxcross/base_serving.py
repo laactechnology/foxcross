@@ -49,7 +49,8 @@ class ModelServing(Starlette):
         try:
             test_data = Path(self.test_data_path)
         except TypeError as exc:
-            logger.critical(f"Problem loading {self.test_data_path}: {exc}")
+            logger.critical(f"Problem loading {self.test_data_path}: {exc}. Please make"
+                            f" sure you have defined your test_data_path on your model serving")
             raise exc
         assert test_data.exists(), f"{self.test_data_path} does not exist"
         super().__init__(**kwargs)
