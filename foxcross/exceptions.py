@@ -1,0 +1,2 @@
+class NoServingModelsFound(Exception):
+    pass
