@@ -25,12 +25,11 @@ Create some test data and a simple model in the same directory to be served:
 
 `models.py`
 ```python
-from foxcross.runner import run_model_serving
-from foxcross.serving import ModelServing
+from foxcross.serving import ModelServing, run_model_serving
 
 class AddOneModel(ModelServing):
     test_data_path = "data.json"
-    
+
     def predict(self, data):
         return [x + 1 for x in data]
 

@@ -1,5 +1,4 @@
 import logging
-import os
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -9,11 +8,15 @@ from starlette.exceptions import HTTPException
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.requests import Request
-from starlette.responses import PlainTextResponse
-from starlette.templating import Jinja2Templates
 
+from .endpoints import (
+    _index_endpoint,
+    _kubernetes_liveness_endpoint,
+    _kubernetes_readiness_endpoint,
+)
 from .enums import MediaTypes
 from .exceptions import BadDataFormatError
+from .runner import ModelServingRunner
 
 try:
     import ujson as json
@@ -22,23 +25,7 @@ except ImportError:
     import json
     from starlette.responses import JSONResponse
 
-SCRIPT_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
-templates = Jinja2Templates(directory=str(SCRIPT_DIR / "templates"))
 logger = logging.getLogger(__name__)
-
-
-async def _index_endpoint(request: Request) -> Jinja2Templates.TemplateResponse:
-    return templates.TemplateResponse(
-        "index.html", {"request": request, "routes": request.app.routes}
-    )
-
-
-async def _kubernetes_liveness_endpoint(request: Request) -> PlainTextResponse:
-    return PlainTextResponse("No problems")
-
-
-async def _kubernetes_readiness_endpoint(request: Request) -> PlainTextResponse:
-    return PlainTextResponse("No problems")
 
 
 class ModelServing(Starlette):
@@ -160,3 +147,8 @@ class ModelServing(Starlette):
     def post_process_results(self, data: Any) -> JSONResponse:
         """Hook to enable post-processing of output data"""
         return self._get_response(data)
+
+
+_model_serving_runner = ModelServingRunner(ModelServing, [ModelServing])
+compose_serving_models = _model_serving_runner.compose_serving_models
+run_model_serving = _model_serving_runner.run_model_serving
