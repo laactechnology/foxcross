@@ -105,23 +105,26 @@ class ModelServing(Starlette):
         self._validate_http_headers(request, "content-type", self._media_types, 415)
         self._validate_http_headers(request, "accept", self._media_types, 406)
         json_data = await request.json()
+        pre_processed_input = self.pre_process_input(json_data)
         try:
-            results = self.predict(json_data)
+            results = self.predict(pre_processed_input)
         except BadDataFormat as exc:
             logger.warning(f"Bad data format inputted to the predict endpoint: {exc}")
             raise HTTPException(status_code=400, detail=str(exc))
-        return self._get_json_response(results)
+        return self.post_process_results(results)
 
     async def _predict_test_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        results = self.predict(test_data)
-        return self._get_json_response(results)
+        pre_processed_input = self.pre_process_input(test_data)
+        results = self.predict(pre_processed_input)
+        return self.post_process_results(results)
 
     async def _input_format_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        return self._get_json_response(test_data)
+        pre_processed_input = self.pre_process_input(test_data)
+        return self.post_process_results(pre_processed_input)
 
     @staticmethod
     def _validate_http_headers(
@@ -143,10 +146,19 @@ class ModelServing(Starlette):
             raise HTTPException(status_code=invalid_status_code, detail=err_msg)
 
     @staticmethod
-    def _get_json_response(data: Any) -> JSONResponse:
+    def _get_response(data: Any) -> JSONResponse:
         try:
             return JSONResponse(json.dumps(data))
         except TypeError as exc:
             raise HTTPException(
-                status_code=500, detail=f"Error trying to serialize data to JSON: {exc}"
+                status_code=500,
+                detail=f"Error trying to serialize response data to JSON: {exc}",
             )
+
+    def pre_process_input(self, data: Any) -> Any:
+        """Hook to enable pre-processing of input data"""
+        return data
+
+    def post_process_results(self, data: Any) -> JSONResponse:
+        """Hook to enable post-processing of output data"""
+        return self._get_response(data)
