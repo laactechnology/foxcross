@@ -42,5 +42,5 @@ Run the model locally:
 python models.py
 ```
 
-Navigate to `localhost:8000/predict-test/` and you should see the list incremented by 1.
+Navigate to `localhost:8000/predict-test/`, and you should see the list incremented by 1.
 You can visit `localhost:8000/` to see all the available routes for your model.
