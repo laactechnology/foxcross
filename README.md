@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/laactech/foxcross.svg?branch=master)](https://travis-ci.org/laactech/foxcross)
 [![Build status](https://ci.appveyor.com/api/projects/status/ufbm8hrkp4whol5a?svg=true)](https://ci.appveyor.com/project/laactech/foxcross)
 
-AsyncIO serving for data science models
+AsyncIO serving for data science models built on [Starlette](https://www.starlette.io/)
 
 **Documentation**: https://www.foxcross.dev/
 
