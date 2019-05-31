@@ -1,0 +1,18 @@
+build: false
+
+environment:
+  PYTHONIOENCODING: "UTF-8"
+
+  matrix:
+    - PYTHON: "C:/Python36-x64"
+    - PYTHON: "C:/Python37-x64"
+
+
+install:
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "python -m pip install poetry"
+  - "SET PATH=%USERPROFILE%\\.poetry\\bin;%PATH%"
+  - "poetry install"
+
+test_script:
+  - "poetry run pytest tests/"
