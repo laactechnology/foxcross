@@ -23,16 +23,17 @@ Create some test data and a simple model in the same directory to be served:
 
 `models.py`
 ```python
-import foxcross
+from foxcross.runner import run_model_serving
+from foxcross.serving import ModelServing
 
-class AddOneModel(foxcross.ModelServing):
+class AddOneModel(ModelServing):
     test_data_path = "data.json"
     
     def predict(self, data):
         return [x + 1 for x in data]
 
 if __name__ == "__main__":
-    foxcross.run_model_serving()
+    run_model_serving()
 ```
 
 Run the model locally:
