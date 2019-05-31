@@ -405,6 +405,10 @@ version = "3.0.2"
 [package.dependencies]
 text-unidecode = "1.2"
 
+[package.dependencies.Unidecode]
+optional = true
+version = "1.0.23"
+
 [package.extras]
 unidecode = ["Unidecode (1.0.23)"]
 
@@ -541,6 +545,7 @@ version = "1.35"
 [[package]]
 category = "main"
 description = "ASCII transliterations of Unicode text"
+marker = "extra == \"unidecode\""
 name = "unidecode"
 optional = false
 python-versions = "*"
@@ -626,10 +631,11 @@ testing = ["pathlib2", "contextlib2", "unittest2"]
 [extras]
 modin = ["modin"]
 pandas = ["pandas"]
+performance = ["modin", "ujson"]
 ujson = ["ujson"]
 
 [metadata]
-content-hash = "dcda73250b9e2bb3ce1337935f4f4ad2ab58e0626b12050c5e0843085351c69b"
+content-hash = "ee434009417a92650f604fc2e7ba01ac10e8798e7ea283355dd3b605cad1d143"
 python-versions = "^3.6"
 
 [metadata.hashes]
