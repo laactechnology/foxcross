@@ -1,10 +1,15 @@
 site_name: Foxcross
 site_description: Asyncio serving for data science models
+
 theme:
   name: material
-repo_name: foxcross
+
+repo_name: laactech/foxcross
+repo_url: https://github.com/laactech/foxcross
+
 nav:
   - Home: index.md
+
 markdown_extensions:
   - markdown.extensions.codehilite:
       guess_lang: false

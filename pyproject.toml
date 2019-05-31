@@ -29,11 +29,10 @@ pygments = "^2.4"
 pymdown-extensions = "^6.0"
 requests = "^2.22"
 
-[tools.poetry.extras]
+[tool.poetry.extras]
 modin = ["modin"]
 ujson = ["ujson"]
 pandas = ["pandas"]
-
 
 [tool.black]
 line-length = 90
