@@ -80,7 +80,7 @@ class ModelServing(Starlette):
         """Hook to load a model or models"""
         pass
 
-    def predict(self, data: Dict) -> Any:
+    def predict(self, data: Any) -> Any:
         """
         Method to define how the model performs a prediction.
         Must return JSON serializable data
