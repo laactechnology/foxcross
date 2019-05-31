@@ -13,7 +13,7 @@ from starlette.responses import PlainTextResponse
 from starlette.templating import Jinja2Templates
 
 from .enums import MediaTypes
-from .exceptions import BadDataFormat
+from .exceptions import BadDataFormatError
 
 try:
     import ujson as json
@@ -108,7 +108,7 @@ class ModelServing(Starlette):
         pre_processed_input = self.pre_process_input(json_data)
         try:
             results = self.predict(pre_processed_input)
-        except BadDataFormat as exc:
+        except BadDataFormatError as exc:
             logger.warning(f"Bad data format inputted to the predict endpoint: {exc}")
             raise HTTPException(status_code=400, detail=str(exc))
         return self.post_process_results(results)

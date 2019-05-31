@@ -14,7 +14,7 @@ from .base_serving import (
     _kubernetes_liveness_endpoint,
     _kubernetes_readiness_endpoint,
 )
-from .exceptions import NoServingModelsFound
+from .exceptions import NoServingModelsFoundError
 
 EXCLUDED_SERVING_CLASSES = [ModelServing]
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ def compose_serving_models(module_name: str = "models", debug: bool = False) -> 
         if issubclass(class_, ModelServing) and class_ not in EXCLUDED_SERVING_CLASSES
     ]
     if not serving_models:
-        raise NoServingModelsFound(f"Could not find any models in {python_module}")
+        raise NoServingModelsFoundError(f"Could not find any models in {python_module}")
     elif len(serving_models) == 1:
         model_serving = serving_models[0](debug=debug)
     else:

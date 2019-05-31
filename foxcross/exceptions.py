@@ -1,6 +1,6 @@
-class NoServingModelsFound(Exception):
+class NoServingModelsFoundError(Exception):
     pass
 
 
-class BadDataFormat(Exception):
+class BadDataFormatError(Exception):
     pass
