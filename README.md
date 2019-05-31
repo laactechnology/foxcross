@@ -16,7 +16,7 @@ Installation using `pip`:
 pip install foxcross
 ```
 
-Create some test data and a simple model to be served:
+Create some test data and a simple model in the same directory to be served:
 
 `data.json`
 ```json
