@@ -148,7 +148,7 @@ class ModelServing(Starlette):
     @staticmethod
     def _get_response(data: Any) -> JSONResponse:
         try:
-            return JSONResponse(json.dumps(data))
+            return JSONResponse(data)
         except TypeError as exc:
             raise HTTPException(
                 status_code=500,

@@ -33,6 +33,7 @@ requests = "^2.22"
 modin = ["modin"]
 ujson = ["ujson"]
 pandas = ["pandas"]
+performance = ["modin", "ujson"]
 
 [tool.black]
 line-length = 90
