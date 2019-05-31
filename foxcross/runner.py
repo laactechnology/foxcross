@@ -15,8 +15,9 @@ from .base_serving import (
     _kubernetes_readiness_endpoint,
 )
 from .exceptions import NoServingModelsFoundError
+from .pandas_serving import DataFrameModelServing
 
-EXCLUDED_SERVING_CLASSES = [ModelServing]
+EXCLUDED_SERVING_CLASSES = [ModelServing, DataFrameModelServing]
 logger = logging.getLogger(__name__)
 
 

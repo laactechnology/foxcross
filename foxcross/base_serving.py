@@ -64,8 +64,6 @@ class ModelServing(Starlette):
         self.add_route("/predict/", self._predict_endpoint, methods=["HEAD", "POST"])
         self.add_route("/predict-test/", self._predict_test_endpoint, methods=["GET"])
         self.add_route("/input-format/", self._input_format_endpoint, methods=["GET"])
-        self.add_route("/liveness/", _kubernetes_liveness_endpoint, methods=["GET"])
-        self.add_route("/readiness/", _kubernetes_readiness_endpoint, methods=["GET"])
         if gzip_response is True:
             self.add_middleware(GZipMiddleware)
         if redirect_https is True:
