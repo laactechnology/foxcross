@@ -1,0 +1,58 @@
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "foxcross"
+version = "0.1.0"
+description = "Asyncio serving for data science models"
+authors = ["Steven Pate <steven@laac.io>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+starlette = "^0.12.0"
+python-slugify = "^3.0"
+unidecode = "^1.0"
+uvicorn = "^0.7.1"
+aiofiles = "^0.4.0"
+jinja2 = "^2.10"
+ujson = {version = "^1.35", optional = true}
+modin = {version = "^0.5.1", optional = true}
+pandas = {version = "^0.24.2", optional = true}
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^1.16"
+mkdocs = "^1.0"
+mkdocs-material = "^4.3"
+pytest = "^4.5"
+pygments = "^2.4"
+pymdown-extensions = "^6.0"
+requests = "^2.22"
+
+[tools.poetry.extras]
+modin = ["modin"]
+ujson = ["ujson"]
+pandas = ["pandas"]
+
+
+[tool.black]
+line-length = 90
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  # The following are specific to Black, you probably don't want those.
+  | blib2to3
+  | tests/data
+  | profiling
+)/
+'''
