@@ -6,8 +6,6 @@
 
 AsyncIO serving for data science models built on [Starlette](https://www.starlette.io/)
 
-**Documentation**: https://www.foxcross.dev/
-
 **Requirements**: Python 3.6+
 
 ## Quick Start
