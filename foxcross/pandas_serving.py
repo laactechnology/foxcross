@@ -3,6 +3,7 @@ from typing import Dict, Union
 
 from starlette.exceptions import HTTPException
 
+from .runner import ModelServingRunner
 from .serving import ModelServing
 
 logger = logging.getLogger(__name__)
@@ -11,12 +12,11 @@ try:
 except ImportError:
     try:
         import pandas
-    except ImportError as e:
-        logger.critical(
+    except ImportError:
+        raise ImportError(
             f"Cannot import pandas. Please install foxcross using foxcross[pandas] or"
             f" foxcross[modin]"
         )
-        raise e
 
 try:
     import ujson as json
@@ -71,3 +71,10 @@ class DataFrameModelServing(ModelServing):
                 for key, value in data.items()
             }
         return super().post_process_results(results)
+
+
+_model_serving_runner = ModelServingRunner(
+    ModelServing, [ModelServing, DataFrameModelServing]
+)
+compose_serving_pandas = _model_serving_runner.compose_serving_models
+run_pandas_serving = _model_serving_runner.run_model_serving

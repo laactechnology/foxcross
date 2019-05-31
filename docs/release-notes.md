@@ -1,5 +1,8 @@
-## 0.3.0
+## 0.4.0
 * Fixed pandas import error
+* Reworked running model serving and composing serving models
+
+## 0.3.0
 * Reworked API
 * Fixed quick start example
 
