@@ -7,6 +7,37 @@ name = "foxcross"
 version = "0.1.0"
 description = "Asyncio serving for data science models"
 authors = ["Steven Pate <steven@laac.io>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+repository = "https://github.com/laactech/foxcross"
+documentation = "https://www.foxcross.dev/"
+keywords = [
+    "data science",
+    "machine learning",
+    "serving",
+    "python",
+    "async",
+    "dataframe",
+    "pandas",
+    "scikit-learn",
+    "pytorch",
+    "http",
+    "rest api"
+]
+classifiers = [
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Environment :: Web Environment",
+    "Development Status :: 3 - Alpha",
+    "Operating System :: OS Independent",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Topic :: Internet :: WWW/HTTP",
+]
 
 [tool.poetry.dependencies]
 python = "^3.6"
