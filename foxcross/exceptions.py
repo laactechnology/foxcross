@@ -4,3 +4,7 @@ class NoServingModelsFoundError(Exception):
 
 class BadDataFormatError(Exception):
     pass
+
+
+class TestDataPathUndefinedError(Exception):
+    pass

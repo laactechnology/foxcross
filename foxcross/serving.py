@@ -11,7 +11,7 @@ from starlette.requests import Request
 
 from .endpoints import _index_endpoint
 from .enums import MediaTypes
-from .exceptions import BadDataFormatError
+from .exceptions import BadDataFormatError, TestDataPathUndefinedError
 from .runner import ModelServingRunner
 
 try:
@@ -32,12 +32,11 @@ class ModelServing(Starlette):
     ):
         try:
             test_data = Path(self.test_data_path)
-        except TypeError as exc:
-            logger.critical(
-                f"Problem loading {self.test_data_path}: {exc}. Please make"
-                f" sure you have defined your test_data_path on your model serving"
+        except TypeError:
+            raise TestDataPathUndefinedError(
+                f"Problem loading {self.test_data_path}. Please make sure you have"
+                f" defined your test_data_path on your model serving"
             )
-            raise exc
         assert test_data.exists(), f"{self.test_data_path} does not exist"
         super().__init__(**kwargs)
         self.load_model()
@@ -75,7 +74,7 @@ class ModelServing(Starlette):
             return json.loads(contents.decode("utf-8"))
         except TypeError as exc:
             raise HTTPException(
-                status_code=500, detail=f"Failed to read test data: {exc}"
+                status_code=500, detail=f"Failed to load test data: {exc}"
             )
 
     async def _predict_endpoint(self, request: Request) -> JSONResponse:
@@ -84,26 +83,31 @@ class ModelServing(Starlette):
         self._validate_http_headers(request, "content-type", self._media_types, 415)
         self._validate_http_headers(request, "accept", self._media_types, 406)
         json_data = await request.json()
-        pre_processed_input = self.pre_process_input(json_data)
+        formatted_data = self._format_input(json_data)
+        pre_processed_input = self.pre_process_input(formatted_data)
         try:
             results = self.predict(pre_processed_input)
         except BadDataFormatError as exc:
             logger.warning(f"Bad data format inputted to the predict endpoint: {exc}")
             raise HTTPException(status_code=400, detail=str(exc))
-        return self.post_process_results(results)
+        processed_results = self.post_process_results(results)
+        return self._format_output(processed_results)
 
     async def _predict_test_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        pre_processed_input = self.pre_process_input(test_data)
+        formatted_data = self._format_input(test_data)
+        pre_processed_input = self.pre_process_input(formatted_data)
         results = self.predict(pre_processed_input)
-        return self.post_process_results(results)
+        processed_results = self.post_process_results(results)
+        return self._format_output(processed_results)
 
     async def _input_format_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        pre_processed_input = self.pre_process_input(test_data)
-        return self.post_process_results(pre_processed_input)
+        formatted_data = self._format_input(test_data)
+        pre_processed_input = self.pre_process_input(formatted_data)
+        return self._format_output(pre_processed_input)
 
     @staticmethod
     def _validate_http_headers(
@@ -138,9 +142,15 @@ class ModelServing(Starlette):
         """Hook to enable pre-processing of input data"""
         return data
 
-    def post_process_results(self, data: Any) -> JSONResponse:
+    def post_process_results(self, data: Any) -> Any:
         """Hook to enable post-processing of output data"""
-        return self._get_response(data)
+        return data
+
+    def _format_input(self, data: Any) -> Any:
+        return data
+
+    def _format_output(self, results: Any) -> JSONResponse:
+        return self._get_response(results)
 
 
 _model_serving_runner = ModelServingRunner(ModelServing, [ModelServing])

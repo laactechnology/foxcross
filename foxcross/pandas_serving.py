@@ -42,35 +42,34 @@ class DataFrameModelServing(ModelServing):
             "You must implement your model serving's predict method"
         )
 
-    def pre_process_input(
+    def _format_input(
         self, data: Dict
     ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
-        pre_processed_data = super().pre_process_input(data)
         try:
             if data.get("multi_dataframe", None) is True:
                 return {
                     key: pandas.read_json(value, orient=self.pandas_orient)
-                    for key, value in pre_processed_data.items()
+                    for key, value in data.items()
                     if key != "multi_dataframe"
                 }
             else:
-                return pandas.read_json(pre_processed_data, orient=self.pandas_orient)
+                return pandas.read_json(data, orient=self.pandas_orient)
         except (TypeError, KeyError) as exc:
             err_msg = f"Error reading in json: {exc}"
             logger.warning(err_msg)
             raise HTTPException(status_code=400, detail=err_msg)
 
-    def post_process_results(
-        self, data: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
+    def _format_output(
+        self, results: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
     ) -> JSONResponse:
         try:
-            results = data.to_json(orient=self.pandas_orient)
+            results = results.to_dict(orient=self.pandas_orient)
         except AttributeError:
             results = {
                 key: value.to_dict(orient=self.pandas_orient)
-                for key, value in data.items()
+                for key, value in results.items()
             }
-        return super().post_process_results(results)
+        return self._get_response(results)
 
 
 _model_serving_runner = ModelServingRunner(

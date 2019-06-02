@@ -1,5 +1,7 @@
 ## 0.5.0
 * Removed kubernetes liveness and readiness endpoints
+* Decoupled formatting of input and output data from processing hooks
+* Added new exception for undefined tests data path
 
 ## 0.4.0
 * Fixed pandas import error
