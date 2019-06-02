@@ -9,11 +9,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.requests import Request
 
-from .endpoints import (
-    _index_endpoint,
-    _kubernetes_liveness_endpoint,
-    _kubernetes_readiness_endpoint,
-)
+from .endpoints import _index_endpoint
 from .enums import MediaTypes
 from .exceptions import BadDataFormatError
 from .runner import ModelServingRunner
@@ -46,8 +42,6 @@ class ModelServing(Starlette):
         super().__init__(**kwargs)
         self.load_model()
         self.add_route("/", _index_endpoint, methods=["GET"])
-        self.add_route("/liveness/", _kubernetes_liveness_endpoint, methods=["GET"])
-        self.add_route("/readiness/", _kubernetes_readiness_endpoint, methods=["GET"])
         self.add_route("/predict/", self._predict_endpoint, methods=["HEAD", "POST"])
         self.add_route("/predict-test/", self._predict_test_endpoint, methods=["GET"])
         self.add_route("/input-format/", self._input_format_endpoint, methods=["GET"])

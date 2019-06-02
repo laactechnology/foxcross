@@ -9,11 +9,7 @@ from slugify import slugify
 from starlette.applications import Starlette
 from starlette.types import ASGIApp
 
-from .endpoints import (
-    _index_endpoint,
-    _kubernetes_liveness_endpoint,
-    _kubernetes_readiness_endpoint,
-)
+from .endpoints import _index_endpoint
 from .exceptions import NoServingModelsFoundError
 
 logger = logging.getLogger(__name__)
@@ -52,12 +48,6 @@ class ModelServingRunner:
                     f"/{slugify(asgi_app.__name__)}", asgi_app(debug=debug)
                 )
             model_serving.add_route("/", _index_endpoint, methods=["GET"])
-            model_serving.add_route(
-                "/liveness/", _kubernetes_liveness_endpoint, methods=["GET"]
-            )
-            model_serving.add_route(
-                "/readiness/", _kubernetes_readiness_endpoint, methods=["GET"]
-            )
         return model_serving
 
     def run_model_serving(self, module_name: str = "models", debug: bool = False):

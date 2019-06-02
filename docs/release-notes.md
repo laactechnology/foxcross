@@ -1,3 +1,6 @@
+## 0.5.0
+* Removed kubernetes liveness and readiness endpoints
+
 ## 0.4.0
 * Fixed pandas import error
 * Reworked running model serving and composing serving models
