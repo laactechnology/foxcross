@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Dict, Union
 
@@ -23,17 +24,21 @@ try:
 except ImportError:
     import json
 
+__location__ = Path(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+)
 
-with Path("data/interpolate.json").open() as f:
+
+with Path(__location__ / "data/interpolate.json").open() as f:
     interpolate_data = json.load(f)
 
-with Path("data/interpolate_multi_frame.json").open() as f:
+with Path(__location__ / "data/interpolate_multi_frame.json").open() as f:
     interpolate_multi_frame_data = json.load(f)
 
-with Path("data/interpolate_result.json").open() as f:
+with Path(__location__ / "data/interpolate_result.json").open() as f:
     interpolate_result_data = json.load(f)
 
-with Path("data/interpolate_multi_frame_result.json").open() as f:
+with Path(__location__ / "data/interpolate_multi_frame_result.json").open() as f:
     interpolate_multi_frame_result_data = json.load(f)
 
 
