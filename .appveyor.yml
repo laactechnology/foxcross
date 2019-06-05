@@ -1,5 +1,10 @@
 build: false
 
+branches:
+  only:
+    - master
+    - develop
+
 environment:
   PYTHONIOENCODING: "UTF-8"
 
