@@ -5,6 +5,7 @@
 * Fixed `ujson` OverflowError due to `numpy.NaN`
 * Renamed `NoServingModelsFoundError` to `NoModelServingFoundError`
 * Removed pre processing from `/input-format/` endpoint
+* Refactored model serving compose interface
 
 ## 0.4.0
 * Fixed pandas import error

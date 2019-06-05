@@ -7,7 +7,8 @@ from slugify import slugify
 from starlette.testclient import TestClient
 
 from foxcross.enums import MediaTypes
-from foxcross.pandas_serving import DataFrameModelServing, compose_serving_pandas
+from foxcross.pandas_serving import DataFrameModelServing, compose_pandas_serving
+from foxcross.serving import ModelServing
 
 try:
     import modin.pandas as pandas
@@ -77,6 +78,13 @@ class InterpolateMultiFrameModelServing(DataFrameModelServing):
         return {key: self.model.interpolate(value) for key, value in data.items()}
 
 
+class AddOneModel(ModelServing):
+    test_data_path = "data.json"
+
+    def predict(self, data):
+        return [x + 1 for x in data]
+
+
 @pytest.mark.parametrize(
     "model_serving,input_data,expected,endpoint",
     [
@@ -122,7 +130,7 @@ def test_endpoints_single_model_serving(model_serving, input_data, expected, end
 
 
 def test_predict_multi_model_serving():
-    app = compose_serving_pandas(__name__, debug=True)
+    app = compose_pandas_serving(__name__, debug=True)
     client = TestClient(app)
     response = client.post(
         f"{slugify(InterpolateModelServing.__name__)}/predict/",
@@ -149,7 +157,7 @@ def test_predict_multi_model_serving():
     ],
 )
 def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected):
-    app = compose_serving_pandas(__name__, debug=True)
+    app = compose_pandas_serving(__name__, debug=True)
     client = TestClient(app)
     response = client.get(
         f"{slugify(InterpolateModelServing.__name__)}{endpoint}",

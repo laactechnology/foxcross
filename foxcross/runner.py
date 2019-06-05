@@ -20,7 +20,7 @@ class ModelServingRunner:
         self._excluded_classes = excluded_classes
         self._base_class = base_class
 
-    def compose_serving_models(
+    def compose_models_serving(
         self, module_name: str = "models", debug: bool = False
     ) -> ASGIApp:
         try:
@@ -51,5 +51,5 @@ class ModelServingRunner:
         return model_serving
 
     def run_model_serving(self, module_name: str = "models", debug: bool = False):
-        asgi_app = self.compose_serving_models(module_name, debug)
+        asgi_app = self.compose_models_serving(module_name, debug)
         uvicorn.run(asgi_app, debug=debug)
