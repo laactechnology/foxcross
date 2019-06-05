@@ -6,6 +6,7 @@
 * Renamed `NoServingModelsFoundError` to `NoModelServingFoundError`
 * Removed pre processing from `/input-format/` endpoint
 * Refactored model serving compose interface
+* Enabled passing of `kwargs` to `ModelServingRunner` methods
 
 ## 0.4.0
 * Fixed pandas import error

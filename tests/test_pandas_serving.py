@@ -215,3 +215,12 @@ def test_predict_method_not_defined():
         )
     with pytest.raises(NotImplementedError):
         client.get("/predict-test/", headers={"Accept": MediaTypes.JSON.value})
+
+
+def test_predict_input_issue():
+    app = InterpolateMultiFrameModelServing(debug=True)
+    client = TestClient(app)
+    multi_response = client.post(
+        "/predict/", headers={"Accept": MediaTypes.JSON.value}, json=[]
+    )
+    assert multi_response.status_code == 400

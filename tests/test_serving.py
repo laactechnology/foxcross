@@ -3,12 +3,13 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import requests
 from slugify import slugify
 from starlette.testclient import TestClient
 
 from foxcross.enums import MediaTypes
 from foxcross.exceptions import BadDataFormatError
-from foxcross.serving import ModelServing, compose_models_serving
+from foxcross.serving import ModelServing, ModelServingRunner, compose_models_serving
 
 try:
     import ujson as json
@@ -158,3 +159,83 @@ def test_bad_data_format_error():
     response = client.post("/predict/", headers={"Accept": MediaTypes.JSON.value}, json=1)
     assert response.status_code == 400
     assert response.content == b"Must be a list"
+
+
+def test_single_model_compose():
+    runner = ModelServingRunner(ModelServing, [ModelServing, AddFiveModel])
+    app = runner.compose_models_serving(__name__)
+    client = TestClient(app)
+    add_one_response = client.post(
+        "/predict/", headers={"Accept": MediaTypes.JSON.value}, json=add_one_data
+    )
+    assert add_one_response.status_code == 200
+    assert add_one_response.json() == add_one_result_data
+
+
+def test_https_redirect():
+    app = AddOneModel(redirect_https=True)
+    client = TestClient(app)
+    add_one_response = client.get("/", allow_redirects=False)
+    assert add_one_response.status_code == 301
+
+
+def test_predict_head_request():
+    app = AddOneModel(debug=True)
+    client = TestClient(app)
+    response = client.head("/predict/")
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+def test_missing_accept_header(endpoint):
+    app = AddOneModel(debug=True)
+    client = TestClient(app)
+    if endpoint == "/predict/":
+        http_method = "POST"
+    else:
+        http_method = "GET"
+    req = requests.Request(http_method, f"{client.base_url}{endpoint}", json=1)
+    prepped_req = req.prepare()
+    try:
+        prepped_req.headers.pop("Accept")
+    except KeyError:
+        pass
+    response = client.send(prepped_req)
+    assert response.status_code == 400
+
+
+def test_missing_content_type_header():
+    app = AddOneModel(debug=True)
+    client = TestClient(app)
+    req = requests.Request("POST", f"{client.base_url}/predict/", json=1)
+    prepped_req = req.prepare()
+    try:
+        prepped_req.headers.pop("Content-Type")
+    except KeyError:
+        pass
+    response = client.send(prepped_req)
+    assert response.status_code == 400
+
+
+def test_wrong_content_type_header():
+    app = AddOneModel(debug=True)
+    client = TestClient(app)
+    response = client.post(
+        "/predict/",
+        headers={"Accept": MediaTypes.JSON.value, "Content-Type": "text/html"},
+    )
+    assert response.status_code == 415
+
+
+@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+def test_wrong_accept_header(endpoint):
+    app = AddOneModel(debug=True)
+    client = TestClient(app)
+    if endpoint == "/predict/":
+        response = client.post(
+            endpoint,
+            headers={"Accept": "text/html", "Content-Type": MediaTypes.JSON.value},
+        )
+    else:
+        response = client.get(endpoint, headers={"Accept": "text/html"})
+    assert response.status_code == 406

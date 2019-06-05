@@ -20,9 +20,7 @@ class ModelServingRunner:
         self._excluded_classes = excluded_classes
         self._base_class = base_class
 
-    def compose_models_serving(
-        self, module_name: str = "models", debug: bool = False
-    ) -> ASGIApp:
+    def compose_models_serving(self, module_name: str = "models", **kwargs) -> ASGIApp:
         try:
             python_module = importlib.import_module(module_name)
         except ModuleNotFoundError as exc:
@@ -41,16 +39,14 @@ class ModelServingRunner:
                 f"Could not find any model serving in {python_module}"
             )
         elif len(serving_models) == 1:
-            model_serving = serving_models[0](debug=debug)
+            model_serving = serving_models[0](**kwargs)
         else:
-            model_serving = Starlette(debug=debug)
+            model_serving = Starlette(**kwargs)
             for asgi_app in serving_models:
-                model_serving.mount(
-                    f"/{slugify(asgi_app.__name__)}", asgi_app(debug=debug)
-                )
+                model_serving.mount(f"/{slugify(asgi_app.__name__)}", asgi_app(**kwargs))
             model_serving.add_route("/", _index_endpoint, methods=["GET"])
         return model_serving
 
-    def run_model_serving(self, module_name: str = "models", debug: bool = False):
-        asgi_app = self.compose_models_serving(module_name, debug)
-        uvicorn.run(asgi_app, debug=debug)
+    def run_model_serving(self, module_name: str = "models", **kwargs):
+        asgi_app = self.compose_models_serving(module_name, **kwargs)
+        uvicorn.run(asgi_app, **kwargs)
