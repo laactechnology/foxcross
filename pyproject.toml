@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "foxcross"
-version = "0.4.0"
+version = "0.5.0"
 description = "AsyncIO serving for data science models"
 authors = ["Steven Pate <steven@laac.io>"]
 license = "BSD-3-Clause"

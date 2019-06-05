@@ -1,4 +1,4 @@
-class NoServingModelsFoundError(Exception):
+class NoModelServingFoundError(Exception):
     pass
 
 

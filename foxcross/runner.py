@@ -10,7 +10,7 @@ from starlette.applications import Starlette
 from starlette.types import ASGIApp
 
 from .endpoints import _index_endpoint
-from .exceptions import NoServingModelsFoundError
+from .exceptions import NoModelServingFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +36,8 @@ class ModelServingRunner:
             and class_ not in self._excluded_classes
         ]
         if not serving_models:
-            raise NoServingModelsFoundError(
-                f"Could not find any models in {python_module}"
+            raise NoModelServingFoundError(
+                f"Could not find any model serving in {python_module}"
             )
         elif len(serving_models) == 1:
             model_serving = serving_models[0](debug=debug)
