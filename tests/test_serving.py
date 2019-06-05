@@ -7,6 +7,7 @@ from slugify import slugify
 from starlette.testclient import TestClient
 
 from foxcross.enums import MediaTypes
+from foxcross.exceptions import BadDataFormatError
 from foxcross.serving import ModelServing, compose_models_serving
 
 try:
@@ -38,7 +39,10 @@ class AddOneModel(ModelServing):
     test_data_path = add_one_data_path
 
     def predict(self, data: Any) -> Any:
-        return [x + 1 for x in data]
+        try:
+            return [x + 1 for x in data]
+        except TypeError:
+            raise BadDataFormatError("Must be a list")
 
 
 class AddAnyModel:
@@ -146,3 +150,11 @@ def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected
     )
     assert add_five_response.status_code == 200
     assert add_five_response.json() == second_expected
+
+
+def test_bad_data_format_error():
+    app = AddOneModel(debug=True)
+    client = TestClient(app)
+    response = client.post("/predict/", headers={"Accept": MediaTypes.JSON.value}, json=1)
+    assert response.status_code == 400
+    assert response.content == b"Must be a list"
