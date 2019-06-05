@@ -94,7 +94,7 @@ jobs:
       install:
         - pip install poetry
         - poetry install -E performance
-      script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_performance_extra.py tests/test_pandas_serving.py
+      script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_performance_extra.py tests/test_pandas_serving.py --cov=foxcross
 
 after_script:
   - pip install codecov

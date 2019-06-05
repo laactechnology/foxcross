@@ -58,6 +58,8 @@ pytest = "^4.5"
 pygments = "^2.4"
 pymdown-extensions = "^6.0"
 requests = "^2.22"
+coverage = "^4.5"
+pytest-cov = "^2.7"
 
 [tool.poetry.extras]
 modin = ["modin"]
