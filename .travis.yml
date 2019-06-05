@@ -11,12 +11,6 @@ cache:
     - "$HOME/.cache/pypoetry"
     - "$HOME/.cache/pre-commit"
 
-install:
-  - pip install poetry
-  - poetry install -E pandas
-
-script: pytest tests/
-
 jobs:
   include:
     - python: "3.6"
@@ -29,6 +23,36 @@ jobs:
         - pre-commit install-hooks
       script:
         - pre-commit run --all-files
+    - stage: test
+      name: "No extras"
+      install:
+        - pip install poetry
+        - poetry install
+      script: pytest tests/test_serving.py tests/test_no_extras.py
+    - stage: test
+      name: "Pandas"
+      install:
+        - pip install poetry
+        - poetry install -E pandas
+      script: pytest tests/test_serving.py tests/test_pandas_extras.py tests/test_pandas_serving.py
+    - stage: test
+      name: "UJSON"
+      install:
+        - pip install poetry
+        - poetry install -E ujson
+      script: pytest tests/test_serving.py tests/test_ujson_extras.py
+    - stage: test
+      name: "Modin"
+      install:
+        - pip install poetry
+        - poetry install -E modin
+      script: pytest tests/test_serving.py tests/test_modin_extras.py tests/test_pandas_serving.py
+    - stage: test
+      name: "Performance"
+      install:
+        - pip install poetry
+        - poetry install -E performance
+      script: pytest tests/test_serving.py tests/test_performance_extras.py tests/test_pandas_serving.py
 
 after_script:
   - pip install codecov

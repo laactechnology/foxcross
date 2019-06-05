@@ -4,8 +4,10 @@ from pathlib import Path
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 
-SCRIPT_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
-templates = Jinja2Templates(directory=str(SCRIPT_DIR / "templates"))
+__location__ = Path(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+)
+templates = Jinja2Templates(directory=str(__location__ / "templates"))
 
 
 async def _index_endpoint(request: Request) -> Jinja2Templates.TemplateResponse:
