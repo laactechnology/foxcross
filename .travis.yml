@@ -29,3 +29,7 @@ jobs:
         - pre-commit install-hooks
       script:
         - pre-commit run --all-files
+
+after_script:
+  - pip install codecov
+  - codecov
