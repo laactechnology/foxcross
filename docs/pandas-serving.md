@@ -4,7 +4,7 @@
 `pip install foxcross[pandas]`
 
 ## Basic Example
-directory structure:
+directory structure
 ```
 .
 +-- data.json
