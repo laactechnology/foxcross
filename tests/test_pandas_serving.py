@@ -32,6 +32,7 @@ __location__ = Path(
 
 interpolate_data_path = __location__ / "data/interpolate.json"
 interpolate_multi_frame_data_path = __location__ / "data/interpolate_multi_frame.json"
+add_one_data_path = __location__ / "data/add_one.json"
 
 with Path(interpolate_data_path).open() as f:
     interpolate_data = json.load(f)
@@ -44,6 +45,12 @@ with Path(__location__ / "data/interpolate_result.json").open() as f:
 
 with Path(__location__ / "data/interpolate_multi_frame_result.json").open() as f:
     interpolate_multi_frame_result_data = json.load(f)
+
+with Path(add_one_data_path).open() as f:
+    add_one_data = json.load(f)
+
+with Path(__location__ / "data/add_one_result.json").open() as f:
+    add_one_result_data = json.load(f)
 
 
 class InterpolateModel:
@@ -79,7 +86,7 @@ class InterpolateMultiFrameModelServing(DataFrameModelServing):
 
 
 class AddOneModel(ModelServing):
-    test_data_path = "data.json"
+    test_data_path = add_one_data_path
 
     def predict(self, data):
         return [x + 1 for x in data]
@@ -129,6 +136,13 @@ def test_endpoints_single_model_serving(model_serving, input_data, expected, end
     assert response.json() == expected
 
 
+def test_index_single_model_serving():
+    app = InterpolateMultiFrameModelServing(debug=True)
+    client = TestClient(app)
+    response = client.get("/")
+    assert response.status_code == 200
+
+
 def test_predict_multi_model_serving():
     app = compose_pandas_serving(__name__, debug=True)
     client = TestClient(app)
@@ -149,14 +163,39 @@ def test_predict_multi_model_serving():
     assert multi_response.json() == interpolate_multi_frame_result_data
 
 
+def test_index_multi_model_serving():
+    app = compose_pandas_serving(__name__, debug=True)
+    client = TestClient(app)
+    response = client.get(f"{slugify(InterpolateModelServing.__name__)}/")
+    assert response.status_code == 200
+
+    multi_response = client.get(f"{slugify(InterpolateMultiFrameModelServing.__name__)}/")
+    assert multi_response.status_code == 200
+
+    root_response = client.get("/")
+    assert root_response.status_code == 200
+
+
 @pytest.mark.parametrize(
-    "endpoint,first_expected,second_expected",
+    "endpoint,first_expected,second_expected,third_expected",
     [
-        ("/input-format/", interpolate_data, interpolate_multi_frame_data),
-        ("/predict-test/", interpolate_result_data, interpolate_multi_frame_result_data),
+        (
+            "/input-format/",
+            interpolate_data,
+            interpolate_multi_frame_data,
+            add_one_data_path,
+        ),
+        (
+            "/predict-test/",
+            interpolate_result_data,
+            interpolate_multi_frame_result_data,
+            add_one_result_data,
+        ),
     ],
 )
-def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected):
+def test_endpoints_multi_model_serving(
+    endpoint, first_expected, second_expected, third_expected
+):
     app = compose_pandas_serving(__name__, debug=True)
     client = TestClient(app)
     response = client.get(
@@ -172,3 +211,10 @@ def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected
     )
     assert multi_response.status_code == 200
     assert multi_response.json() == second_expected
+
+    add_one_response = client.get(
+        f"{slugify(AddOneModel.__name__)}{endpoint}",
+        headers={"Accept": MediaTypes.JSON.value},
+    )
+    assert add_one_response.status_code == 200
+    assert add_one_response.json() == third_expected
