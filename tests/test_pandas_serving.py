@@ -47,6 +47,10 @@ with Path(__location__ / "data/interpolate_multi_frame_result.json").open() as f
     interpolate_multi_frame_result_data = json.load(f)
 
 
+class PredictMethodNotDefined(DataFrameModelServing):
+    test_data_path = interpolate_data_path
+
+
 class InterpolateModel:
     def __init__(self, direction: str):
         self._direction = direction
@@ -200,3 +204,14 @@ def test_endpoints_multi_model_serving(
     )
     assert add_one_response.status_code == 200
     assert add_one_response.json() == third_expected
+
+
+def test_predict_method_not_defined():
+    app = PredictMethodNotDefined(debug=True)
+    client = TestClient(app)
+    with pytest.raises(NotImplementedError):
+        client.post(
+            "/predict/", headers={"Accept": MediaTypes.JSON.value}, json=interpolate_data
+        )
+    with pytest.raises(NotImplementedError):
+        client.get("/predict-test/", headers={"Accept": MediaTypes.JSON.value})

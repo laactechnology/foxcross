@@ -26,8 +26,9 @@ class ModelServingRunner:
         try:
             python_module = importlib.import_module(module_name)
         except ModuleNotFoundError as exc:
-            logger.critical(f"Cannot find Python module named {module_name}: {exc}")
-            raise exc
+            err_msg = f"Cannot find Python module named {module_name}: {exc}"
+            logger.critical(err_msg)
+            raise ModuleNotFoundError(err_msg)
         class_members = inspect.getmembers(sys.modules[module_name], inspect.isclass)
         serving_models = [
             class_
