@@ -3,10 +3,11 @@ from pathlib import Path
 from typing import Dict, Union
 
 import pytest
+from slugify import slugify
 from starlette.testclient import TestClient
 
 from foxcross.enums import MediaTypes
-from foxcross.pandas_serving import DataFrameModelServing
+from foxcross.pandas_serving import DataFrameModelServing, compose_serving_pandas
 
 try:
     import modin.pandas as pandas
@@ -85,7 +86,7 @@ class InterpolateMultiFrameModelServing(DataFrameModelServing):
         ),
     ],
 )
-def test_predict_single_model(model_serving, input_data, expected):
+def test_predict_single_model_serving(model_serving, input_data, expected):
     app = model_serving(debug=True)
     client = TestClient(app)
     response = client.post(
@@ -93,3 +94,23 @@ def test_predict_single_model(model_serving, input_data, expected):
     )
     assert response.status_code == 200
     assert response.json() == expected
+
+
+def test_predict_multi_model_serving():
+    app = compose_serving_pandas(__name__, debug=True)
+    client = TestClient(app)
+    response = client.post(
+        f"{slugify(InterpolateModelServing.__name__)}/predict/",
+        headers={"Accept": MediaTypes.JSON.value},
+        json=interpolate_data,
+    )
+    assert response.status_code == 200
+    assert response.json() == interpolate_result_data
+
+    multi_response = client.post(
+        f"{slugify(InterpolateMultiFrameModelServing.__name__)}/predict/",
+        headers={"Accept": MediaTypes.JSON.value},
+        json=interpolate_multi_frame_data,
+    )
+    assert multi_response.status_code == 200
+    assert multi_response.json() == interpolate_multi_frame_result_data
