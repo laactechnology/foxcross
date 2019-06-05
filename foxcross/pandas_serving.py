@@ -63,8 +63,9 @@ class DataFrameModelServing(ModelServing):
     ) -> JSONResponse:
         # Convert NaNs to Nones to handle ujson OverflowError
         try:
-            results.replace({numpy.nan: None})
-            results = results.to_dict(orient=self.pandas_orient)
+            results = results.replace({numpy.nan: None}).to_dict(
+                orient=self.pandas_orient
+            )
         except AttributeError:
             results = {
                 key: value.replace({numpy.nan: None}).to_dict(orient=self.pandas_orient)

@@ -78,22 +78,45 @@ class InterpolateMultiFrameModelServing(DataFrameModelServing):
 
 
 @pytest.mark.parametrize(
-    "model_serving,input_data,expected",
+    "model_serving,input_data,expected,endpoint",
     [
-        (InterpolateModelServing, interpolate_data, interpolate_result_data),
+        (InterpolateModelServing, interpolate_data, interpolate_result_data, "/predict/"),
         (
             InterpolateMultiFrameModelServing,
             interpolate_multi_frame_data,
             interpolate_multi_frame_result_data,
+            "/predict/",
+        ),
+        (InterpolateModelServing, None, interpolate_data, "/input-format/"),
+        (
+            InterpolateMultiFrameModelServing,
+            None,
+            interpolate_multi_frame_data,
+            "/input-format/",
+        ),
+        (
+            InterpolateModelServing,
+            interpolate_data,
+            interpolate_result_data,
+            "/predict-test/",
+        ),
+        (
+            InterpolateMultiFrameModelServing,
+            interpolate_multi_frame_data,
+            interpolate_multi_frame_result_data,
+            "/predict-test/",
         ),
     ],
 )
-def test_predict_single_model_serving(model_serving, input_data, expected):
+def test_endpoints_single_model_serving(model_serving, input_data, expected, endpoint):
     app = model_serving(debug=True)
     client = TestClient(app)
-    response = client.post(
-        "/predict/", headers={"Accept": MediaTypes.JSON.value}, json=input_data
-    )
+    if endpoint == "/predict/":
+        response = client.post(
+            endpoint, headers={"Accept": MediaTypes.JSON.value}, json=input_data
+        )
+    else:
+        response = client.get(endpoint, headers={"Accept": MediaTypes.JSON.value})
     assert response.status_code == 200
     assert response.json() == expected
 
@@ -116,3 +139,28 @@ def test_predict_multi_model_serving():
     )
     assert multi_response.status_code == 200
     assert multi_response.json() == interpolate_multi_frame_result_data
+
+
+@pytest.mark.parametrize(
+    "endpoint,first_expected,second_expected",
+    [
+        ("/input-format/", interpolate_data, interpolate_multi_frame_data),
+        ("/predict-test/", interpolate_result_data, interpolate_multi_frame_result_data),
+    ],
+)
+def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected):
+    app = compose_serving_pandas(__name__, debug=True)
+    client = TestClient(app)
+    response = client.get(
+        f"{slugify(InterpolateModelServing.__name__)}{endpoint}",
+        headers={"Accept": MediaTypes.JSON.value},
+    )
+    assert response.status_code == 200
+    assert response.json() == first_expected
+
+    multi_response = client.get(
+        f"{slugify(InterpolateMultiFrameModelServing.__name__)}{endpoint}",
+        headers={"Accept": MediaTypes.JSON.value},
+    )
+    assert multi_response.status_code == 200
+    assert multi_response.json() == second_expected

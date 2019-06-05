@@ -105,9 +105,7 @@ class ModelServing(Starlette):
     async def _input_format_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        formatted_data = self._format_input(test_data)
-        pre_processed_input = self.pre_process_input(formatted_data)
-        return self._format_output(pre_processed_input)
+        return self._get_response(test_data)
 
     @staticmethod
     def _validate_http_headers(
