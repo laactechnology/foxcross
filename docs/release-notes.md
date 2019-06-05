@@ -1,3 +1,13 @@
+## 0.5.0
+* Removed kubernetes liveness and readiness endpoints
+* Decoupled formatting of input and output data from processing hooks
+* Added new exception for undefined tests data path
+* Fixed `ujson` OverflowError due to `numpy.NaN`
+* Renamed `NoServingModelsFoundError` to `NoModelServingFoundError`
+* Removed pre processing from `/input-format/` endpoint
+* Refactored model serving compose interface
+* Enabled passing of `kwargs` to `ModelServingRunner` methods
+
 ## 0.4.0
 * Fixed pandas import error
 * Reworked running model serving and composing serving models

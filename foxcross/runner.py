@@ -9,12 +9,8 @@ from slugify import slugify
 from starlette.applications import Starlette
 from starlette.types import ASGIApp
 
-from .endpoints import (
-    _index_endpoint,
-    _kubernetes_liveness_endpoint,
-    _kubernetes_readiness_endpoint,
-)
-from .exceptions import NoServingModelsFoundError
+from .endpoints import _index_endpoint
+from .exceptions import NoModelServingFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +20,13 @@ class ModelServingRunner:
         self._excluded_classes = excluded_classes
         self._base_class = base_class
 
-    def compose_serving_models(
-        self, module_name: str = "models", debug: bool = False
-    ) -> ASGIApp:
+    def compose_models_serving(self, module_name: str = "models", **kwargs) -> ASGIApp:
         try:
             python_module = importlib.import_module(module_name)
         except ModuleNotFoundError as exc:
-            logger.critical(f"Cannot find Python module named {module_name}: {exc}")
-            raise exc
+            err_msg = f"Cannot find Python module named {module_name}: {exc}"
+            logger.critical(err_msg)
+            raise ModuleNotFoundError(err_msg)
         class_members = inspect.getmembers(sys.modules[module_name], inspect.isclass)
         serving_models = [
             class_
@@ -40,26 +35,18 @@ class ModelServingRunner:
             and class_ not in self._excluded_classes
         ]
         if not serving_models:
-            raise NoServingModelsFoundError(
-                f"Could not find any models in {python_module}"
+            raise NoModelServingFoundError(
+                f"Could not find any model serving in {python_module}"
             )
         elif len(serving_models) == 1:
-            model_serving = serving_models[0](debug=debug)
+            model_serving = serving_models[0](**kwargs)
         else:
-            model_serving = Starlette(debug=debug)
+            model_serving = Starlette(**kwargs)
             for asgi_app in serving_models:
-                model_serving.mount(
-                    f"/{slugify(asgi_app.__name__)}", asgi_app(debug=debug)
-                )
+                model_serving.mount(f"/{slugify(asgi_app.__name__)}", asgi_app(**kwargs))
             model_serving.add_route("/", _index_endpoint, methods=["GET"])
-            model_serving.add_route(
-                "/liveness/", _kubernetes_liveness_endpoint, methods=["GET"]
-            )
-            model_serving.add_route(
-                "/readiness/", _kubernetes_readiness_endpoint, methods=["GET"]
-            )
         return model_serving
 
-    def run_model_serving(self, module_name: str = "models", debug: bool = False):
-        asgi_app = self.compose_serving_models(module_name, debug)
-        uvicorn.run(asgi_app, debug=debug)
+    def run_model_serving(self, module_name: str = "models", **kwargs):
+        asgi_app = self.compose_models_serving(module_name, **kwargs)
+        uvicorn.run(asgi_app, **kwargs)

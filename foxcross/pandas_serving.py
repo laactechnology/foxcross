@@ -6,12 +6,13 @@ from starlette.exceptions import HTTPException
 from .runner import ModelServingRunner
 from .serving import ModelServing
 
-logger = logging.getLogger(__name__)
 try:
     import modin.pandas as pandas
+    import numpy
 except ImportError:
     try:
         import pandas
+        import numpy
     except ImportError:
         raise ImportError(
             f"Cannot import pandas. Please install foxcross using foxcross[pandas] or"
@@ -26,9 +27,11 @@ except ImportError:
     from starlette.responses import JSONResponse
 
 
+logger = logging.getLogger(__name__)
+
+
 class DataFrameModelServing(ModelServing):
-    # TODO: probably should limit which choices are available for orient since to_dict and
-    # to_json differ
+    # TODO: probably should limit to orient choices
     pandas_orient = "index"
 
     def predict(
@@ -42,39 +45,38 @@ class DataFrameModelServing(ModelServing):
             "You must implement your model serving's predict method"
         )
 
-    def pre_process_input(
+    def _format_input(
         self, data: Dict
     ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
-        pre_processed_data = super().pre_process_input(data)
         try:
-            if data.get("multi_dataframe", None) is True:
-                return {
-                    key: pandas.read_json(value, orient=self.pandas_orient)
-                    for key, value in pre_processed_data.items()
-                    if key != "multi_dataframe"
-                }
+            if data.pop("multi_dataframe", None) is True:
+                return {key: pandas.DataFrame(value) for key, value in data.items()}
             else:
-                return pandas.read_json(pre_processed_data, orient=self.pandas_orient)
+                return pandas.DataFrame(data)
         except (TypeError, KeyError) as exc:
             err_msg = f"Error reading in json: {exc}"
             logger.warning(err_msg)
             raise HTTPException(status_code=400, detail=err_msg)
 
-    def post_process_results(
-        self, data: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
+    def _format_output(
+        self, results: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
     ) -> JSONResponse:
+        # Convert NaNs to Nones to handle ujson OverflowError
         try:
-            results = data.to_json(orient=self.pandas_orient)
+            results = results.replace({numpy.nan: None}).to_dict(
+                orient=self.pandas_orient
+            )
         except AttributeError:
             results = {
-                key: value.to_dict(orient=self.pandas_orient)
-                for key, value in data.items()
+                key: value.replace({numpy.nan: None}).to_dict(orient=self.pandas_orient)
+                for key, value in results.items()
             }
-        return super().post_process_results(results)
+            results["multi_dataframe"] = True
+        return self._get_response(results)
 
 
 _model_serving_runner = ModelServingRunner(
     ModelServing, [ModelServing, DataFrameModelServing]
 )
-compose_serving_pandas = _model_serving_runner.compose_serving_models
+compose_pandas_serving = _model_serving_runner.compose_models_serving
 run_pandas_serving = _model_serving_runner.run_model_serving

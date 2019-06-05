@@ -1,5 +1,12 @@
 build: false
 
+skip_branch_with_pr: true
+
+branches:
+  only:
+    - master
+    - develop
+
 environment:
   PYTHONIOENCODING: "UTF-8"
 
@@ -12,7 +19,7 @@ install:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "python -m pip install poetry"
   - "SET PATH=%USERPROFILE%\\.poetry\\bin;%PATH%"
-  - "poetry install"
+  - "poetry install -E pandas"
 
 test_script:
-  - "poetry run pytest tests/"
+  - "poetry run pytest tests/test_serving.py tests/test_failed_serving.py tests/test_pandas_extra.py tests/test_pandas_serving.py"
