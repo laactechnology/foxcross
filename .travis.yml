@@ -1,6 +1,11 @@
 language: python
 dist: xenial
 
+branches:
+  only:
+    - master
+    - develop
+
 stages:
   - lint
   - test
@@ -13,9 +18,6 @@ cache:
 
 jobs:
   include:
-    - python: "3.6"
-    - python: "3.7"
-
     - stage: lint
       python: "3.7"
       install:
@@ -24,31 +26,71 @@ jobs:
       script:
         - pre-commit run --all-files
     - stage: test
-      name: "No extras"
+      python: "3.7"
+      name: "No extras 3.7"
       install:
         - pip install poetry
         - poetry install
       script: pytest tests/test_serving.py tests/test_no_extras.py
     - stage: test
-      name: "Pandas"
+      python: "3.6"
+      name: "No extras 3.6"
+      install:
+        - pip install poetry
+        - poetry install
+      script: pytest tests/test_serving.py tests/test_no_extras.py
+    - stage: test
+      python: "3.6"
+      name: "Pandas 3.6"
       install:
         - pip install poetry
         - poetry install -E pandas
-      script: pytest tests/test_serving.py tests/test_pandas_extras.py tests/test_pandas_serving.py
+      script: pytest tests/test_serving.py tests/test_pandas_extra.py tests/test_pandas_serving.py
     - stage: test
-      name: "UJSON"
+      python: "3.7"
+      name: "Pandas 3.7"
+      install:
+        - pip install poetry
+        - poetry install -E pandas
+      script: pytest tests/test_serving.py tests/test_pandas_extra.py tests/test_pandas_serving.py
+    - stage: test
+      python: "3.6"
+      name: "UJSON 3.6"
       install:
         - pip install poetry
         - poetry install -E ujson
       script: pytest tests/test_serving.py tests/test_ujson_extras.py
     - stage: test
-      name: "Modin"
+      python: "3.7"
+      name: "UJSON 3.7"
+      install:
+        - pip install poetry
+        - poetry install -E ujson
+      script: pytest tests/test_serving.py tests/test_ujson_extras.py
+    - stage: test
+      python: "3.6"
+      name: "Modin 3.6"
       install:
         - pip install poetry
         - poetry install -E modin
       script: pytest tests/test_serving.py tests/test_modin_extras.py tests/test_pandas_serving.py
     - stage: test
-      name: "Performance"
+      python: "3.7"
+      name: "Modin 3.7"
+      install:
+        - pip install poetry
+        - poetry install -E modin
+      script: pytest tests/test_serving.py tests/test_modin_extras.py tests/test_pandas_serving.py
+    - stage: test
+      python: "3.6"
+      name: "Performance 3.6"
+      install:
+        - pip install poetry
+        - poetry install -E performance
+      script: pytest tests/test_serving.py tests/test_performance_extras.py tests/test_pandas_serving.py
+    - stage: test
+      python: "3.7"
+      name: "Performance 3.7"
       install:
         - pip install poetry
         - poetry install -E performance

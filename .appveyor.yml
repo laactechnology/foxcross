@@ -15,4 +15,4 @@ install:
   - "poetry install -E pandas"
 
 test_script:
-  - "poetry run pytest tests/test_serving.py tests/test_pandas_extras.py tests/test_pandas_serving.py"
+  - "poetry run pytest tests/test_serving.py tests/test_pandas_extra.py tests/test_pandas_serving.py"
