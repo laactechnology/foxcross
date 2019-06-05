@@ -27,7 +27,7 @@ with Path(add_one_data_path).open() as f:
 with Path(__location__ / "data/add_one_result.json").open() as f:
     add_one_result_data = json.load(f)
 
-with Path(add_one_data_path).open() as f:
+with Path(add_five_data_path).open() as f:
     add_five_data = json.load(f)
 
 with Path(__location__ / "data/add_five_result.json").open() as f:
@@ -127,7 +127,7 @@ def test_index_multi_model_serving():
     "endpoint,first_expected,second_expected",
     [
         ("/input-format/", add_one_data, add_five_data),
-        ("/predict-test/", add_one_data, add_five_data),
+        ("/predict-test/", add_one_result_data, add_five_result_data),
     ],
 )
 def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected):

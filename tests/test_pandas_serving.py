@@ -8,7 +8,8 @@ from starlette.testclient import TestClient
 
 from foxcross.enums import MediaTypes
 from foxcross.pandas_serving import DataFrameModelServing, compose_pandas_serving
-from foxcross.serving import ModelServing
+
+from .test_serving import AddOneModel, add_one_data, add_one_result_data
 
 try:
     import modin.pandas as pandas
@@ -32,7 +33,6 @@ __location__ = Path(
 
 interpolate_data_path = __location__ / "data/interpolate.json"
 interpolate_multi_frame_data_path = __location__ / "data/interpolate_multi_frame.json"
-add_one_data_path = __location__ / "data/add_one.json"
 
 with Path(interpolate_data_path).open() as f:
     interpolate_data = json.load(f)
@@ -45,12 +45,6 @@ with Path(__location__ / "data/interpolate_result.json").open() as f:
 
 with Path(__location__ / "data/interpolate_multi_frame_result.json").open() as f:
     interpolate_multi_frame_result_data = json.load(f)
-
-with Path(add_one_data_path).open() as f:
-    add_one_data = json.load(f)
-
-with Path(__location__ / "data/add_one_result.json").open() as f:
-    add_one_result_data = json.load(f)
 
 
 class InterpolateModel:
@@ -83,13 +77,6 @@ class InterpolateMultiFrameModelServing(DataFrameModelServing):
         self, data: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
     ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
         return {key: self.model.interpolate(value) for key, value in data.items()}
-
-
-class AddOneModel(ModelServing):
-    test_data_path = add_one_data_path
-
-    def predict(self, data):
-        return [x + 1 for x in data]
 
 
 @pytest.mark.parametrize(
@@ -179,12 +166,7 @@ def test_index_multi_model_serving():
 @pytest.mark.parametrize(
     "endpoint,first_expected,second_expected,third_expected",
     [
-        (
-            "/input-format/",
-            interpolate_data,
-            interpolate_multi_frame_data,
-            add_one_data_path,
-        ),
+        ("/input-format/", interpolate_data, interpolate_multi_frame_data, add_one_data),
         (
             "/predict-test/",
             interpolate_result_data,
