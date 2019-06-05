@@ -29,11 +29,13 @@ __location__ = Path(
     os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 )
 
+interpolate_data_path = __location__ / "data/interpolate.json"
+interpolate_multi_frame_data_path = __location__ / "data/interpolate_multi_frame.json"
 
-with Path(__location__ / "data/interpolate.json").open() as f:
+with Path(interpolate_data_path).open() as f:
     interpolate_data = json.load(f)
 
-with Path(__location__ / "data/interpolate_multi_frame.json").open() as f:
+with Path(interpolate_multi_frame_data_path).open() as f:
     interpolate_multi_frame_data = json.load(f)
 
 with Path(__location__ / "data/interpolate_result.json").open() as f:
@@ -52,7 +54,7 @@ class InterpolateModel:
 
 
 class InterpolateModelServing(DataFrameModelServing):
-    test_data_path = "data/interpolate.json"
+    test_data_path = interpolate_data_path
 
     def load_model(self):
         self.model = InterpolateModel("both")
@@ -64,7 +66,7 @@ class InterpolateModelServing(DataFrameModelServing):
 
 
 class InterpolateMultiFrameModelServing(DataFrameModelServing):
-    test_data_path = "data/interpolate.json"
+    test_data_path = interpolate_multi_frame_data_path
 
     def load_model(self):
         self.model = InterpolateModel("forward")
