@@ -1,3 +1,6 @@
+## NEXT
+* Fixed `ujson` OverflowError with `numpy.NaN`
+
 ## 0.5.0
 * Removed kubernetes liveness and readiness endpoints
 * Decoupled formatting of input and output data from processing hooks

@@ -6,12 +6,13 @@ from starlette.exceptions import HTTPException
 from .runner import ModelServingRunner
 from .serving import ModelServing
 
-logger = logging.getLogger(__name__)
 try:
     import modin.pandas as pandas
+    import numpy
 except ImportError:
     try:
         import pandas
+        import numpy
     except ImportError:
         raise ImportError(
             f"Cannot import pandas. Please install foxcross using foxcross[pandas] or"
@@ -26,9 +27,11 @@ except ImportError:
     from starlette.responses import JSONResponse
 
 
+logger = logging.getLogger(__name__)
+
+
 class DataFrameModelServing(ModelServing):
-    # TODO: probably should limit which choices are available for orient since to_dict and
-    # to_json differ
+    # TODO: probably should limit to orient choices
     pandas_orient = "index"
 
     def predict(
@@ -46,14 +49,10 @@ class DataFrameModelServing(ModelServing):
         self, data: Dict
     ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
         try:
-            if data.get("multi_dataframe", None) is True:
-                return {
-                    key: pandas.read_json(value, orient=self.pandas_orient)
-                    for key, value in data.items()
-                    if key != "multi_dataframe"
-                }
+            if data.pop("multi_dataframe", None) is True:
+                return {key: pandas.DataFrame(value) for key, value in data.items()}
             else:
-                return pandas.read_json(data, orient=self.pandas_orient)
+                return pandas.DataFrame(data)
         except (TypeError, KeyError) as exc:
             err_msg = f"Error reading in json: {exc}"
             logger.warning(err_msg)
@@ -62,13 +61,16 @@ class DataFrameModelServing(ModelServing):
     def _format_output(
         self, results: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
     ) -> JSONResponse:
+        # Convert NaNs to Nones to handle ujson OverflowError
         try:
+            results.replace({numpy.nan: None})
             results = results.to_dict(orient=self.pandas_orient)
         except AttributeError:
             results = {
-                key: value.to_dict(orient=self.pandas_orient)
+                key: value.replace({numpy.nan: None}).to_dict(orient=self.pandas_orient)
                 for key, value in results.items()
             }
+            results["multi_dataframe"] = True
         return self._get_response(results)
 
 

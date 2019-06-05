@@ -13,7 +13,7 @@ cache:
 
 install:
   - pip install poetry
-  - poetry install
+  - poetry install -E pandas
 
 script: pytest tests/
 
