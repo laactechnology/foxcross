@@ -1,4 +1,4 @@
-## 0.6.0
+## 0.6.0 (Next release)
 * Added `PreProcessingError` for use with `pre_process_input`
 * Added  `PostProcessingError` for use with `post_process_results`
 
