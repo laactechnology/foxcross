@@ -62,5 +62,5 @@ web framework whereas `Foxcross` is built on [Starlette](https://www.starlette.i
 more performant [ASGI](https://asgi.readthedocs.io/en/latest/) web framework.
 
 `Foxcross` aims to be the serving library for data science models built with frameworks
-that do not come with their own serving library. Using `Foxcross` allows for consistent
+that do not come with their own serving library. Using `Foxcross` enables consistent
 and testable serving of data science models.
