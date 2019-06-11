@@ -61,17 +61,15 @@ that happens during the models prediction. All subclasses of <code>ModelServing<
 these methods, and all these methods are <strong>optional</strong> to define.</p>
 <ul>
 <li><code>load_model</code><ul>
-<li>This method allows you to load your model <strong>on startup</strong> and <strong>into memory</strong>.</li>
+<li>Allows you to load your model <strong>on startup</strong> and <strong>into memory</strong>.</li>
 </ul>
 </li>
 <li><code>pre_process_input</code><ul>
-<li>The <code>pre_process_input</code> method allows you to transform your input data prior to a
-prediction.</li>
+<li>Allows you to transform your input data prior to a prediction.</li>
 </ul>
 </li>
 <li><code>post_process_results</code><ul>
-<li>The <code>post_process_results</code> method allows you to transform your prediction results
-prior to them being returned.</li>
+<li>Allows you to transform your prediction results prior to them being returned.</li>
 </ul>
 </li>
 </ul>
