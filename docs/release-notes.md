@@ -1,6 +1,7 @@
 ## 0.6.0 (Next release)
 * Added `PreProcessingError` for use with `pre_process_input`
 * Added `PostProcessingError` for use with `post_process_results`
+* Included home route for every model index page
 
 ## 0.5.0
 * Removed kubernetes liveness and readiness endpoints
