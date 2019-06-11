@@ -49,7 +49,7 @@ Doing this gives your model four endpoints:
 ### Hook Overview
 `Foxcross` contains two sets of hooks. One set that happens on serving startup and one set
 that happens during the models prediction. All subclasses of `ModelServing` have access to
-these methods and all these methods are **optional** to define.
+these methods, and all these methods are **optional** to define.
 
 * `load_model`
 * `pre_process_input`
