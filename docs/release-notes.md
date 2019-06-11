@@ -1,6 +1,6 @@
 ## 0.6.0 (Next release)
 * Added `PreProcessingError` for use with `pre_process_input`
-* Added  `PostProcessingError` for use with `post_process_results`
+* Added `PostProcessingError` for use with `post_process_results`
 
 ## 0.5.0
 * Removed kubernetes liveness and readiness endpoints
