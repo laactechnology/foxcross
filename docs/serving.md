@@ -100,3 +100,47 @@ class RandomForest(ModelServing):
     def prep_results(self, data):
         ...
 ```
+
+## Serving multiple models
+
+`Foxcross` enables you to compose and serve multiple models from a single place.
+
+#### Example
+directory structure
+```
+.
++-- data.json
++-- models.py
+```
+data.json
+```json
+[1,2,3,4,5]
+```
+models.py
+```python
+from foxcross.serving import ModelServing, run_model_serving
+
+class AddOneModel(ModelServing):
+    test_data_path = "data.json"
+
+    def predict(self, data):
+        return [x + 1 for x in data]
+
+class AddTwoModel(ModelServing):
+    test_data_path = "data.json"
+    
+    def predict(self, data):
+        return [y + 2 for y in data] 
+
+if __name__ == "__main__":
+    run_model_serving()
+```
+
+Navigate to `localhost:8000/` in your web browser. You should see routes to both the
+`AddOneModel` and the `AddTwoModel`. Clicking on one of the model routes show you that
+both models come with the same set of endpoints and both perform predictions.
+
+#### How does this work?
+Foxcross finds all classes inside your `models.py` file that subclass `ModelServing` and
+combines those into a single model serving. Foxcross uses the name of the class such as
+`AddOneModel` and `AddTwoModel` to define the routes where those models live.
