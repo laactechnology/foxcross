@@ -43,3 +43,66 @@ Doing this gives your model four endpoints:
     * Reads the `test_data_path` and returns it through a GET
     * Allows you and your users to see what the model expects as input through the predict
     endpoint
+
+## Serving Hooks
+
+### Hook Overview
+`Foxcross` contains two sets of hooks. One set that happens on serving startup and one set
+that happens during the models prediction. All subclasses of `ModelServing` have access to
+these methods and all these methods are **optional** to define.
+
+* `load_model`
+* `pre_process_input`
+* `post_process_results`
+
+### Hook Process
+
+* **On startup**: run model serving -> `load_model` -> model serving started
+    * This process happens when you start serving your model
+* **On prediction**: `pre_process_input` -> `predict` -> `post_process_results`
+    * This process happens every time the `predict` and `predict-test` endpoint are called
+
+### load_model
+This method allows you to load your model **on startup** and **into memory**.
+
+### pre_process_input
+The `pre_process_input` method allows you to transform your input data prior to a prediction.
+
+### post_process_results
+The `post_process_results` method allows you to transform your prediction results prior to
+them being returned.
+
+### Example
+directory structure
+```
+.
++-- data.json
++-- models.py
++-- random_forest.pkl
+```
+models.py
+```python
+from sklearn.externals import joblib
+from foxcross.serving import ModelServing
+
+class RandomForest(ModelServing):
+    test_data_path = "data.json"
+    
+    def load_model(self):
+        self.model = joblib.load("random_forest.pkl")
+    
+    def pre_process_input(self, data):
+        return self.add_missing_values(data)
+    
+    def add_missing_values(self, data):
+        ...
+    
+    def predict(self, data):
+        return self.model.predict(data)
+    
+    def post_process_results(self, data):
+        return self.prep_results(data)
+    
+    def prep_results(self, data):
+        ...
+```
