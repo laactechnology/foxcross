@@ -13,6 +13,7 @@ nav:
   - Home: index.md
   - Serving: serving.md
   - Pandas Serving: pandas-serving.md
+  - Advanced Usage: advanced-usage.md
   - Release Notes: release-notes.md
 
 markdown_extensions:

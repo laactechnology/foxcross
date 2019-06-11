@@ -90,5 +90,5 @@ class DataFrameModelServing(ModelServing):
 _model_serving_runner = ModelServingRunner(
     ModelServing, [ModelServing, DataFrameModelServing]
 )
-compose_pandas_serving = _model_serving_runner.compose_models_serving
+compose_pandas = _model_serving_runner.compose
 run_pandas_serving = _model_serving_runner.run_model_serving

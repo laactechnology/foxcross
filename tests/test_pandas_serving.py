@@ -7,7 +7,7 @@ from slugify import slugify
 from starlette.testclient import TestClient
 
 from foxcross.enums import MediaTypes
-from foxcross.pandas_serving import DataFrameModelServing, compose_pandas_serving
+from foxcross.pandas_serving import DataFrameModelServing, compose_pandas
 
 from .test_serving import AddOneModel, add_one_data, add_one_result_data
 
@@ -135,7 +135,7 @@ def test_index_single_model_serving():
 
 
 def test_predict_multi_model_serving():
-    app = compose_pandas_serving(__name__, debug=True)
+    app = compose_pandas(__name__, debug=True)
     client = TestClient(app)
     response = client.post(
         f"{slugify(InterpolateModelServing.__name__)}/predict/",
@@ -155,7 +155,7 @@ def test_predict_multi_model_serving():
 
 
 def test_index_multi_model_serving():
-    app = compose_pandas_serving(__name__, debug=True)
+    app = compose_pandas(__name__, debug=True)
     client = TestClient(app)
     response = client.get(f"{slugify(InterpolateModelServing.__name__)}/")
     assert response.status_code == 200
@@ -182,7 +182,7 @@ def test_index_multi_model_serving():
 def test_endpoints_multi_model_serving(
     endpoint, first_expected, second_expected, third_expected
 ):
-    app = compose_pandas_serving(__name__, debug=True)
+    app = compose_pandas(__name__, debug=True)
     client = TestClient(app)
     response = client.get(
         f"{slugify(InterpolateModelServing.__name__)}{endpoint}",

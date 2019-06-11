@@ -3,6 +3,16 @@
 
 `pip install foxcross[pandas]`
 
+## Overview
+Serving pandas based models works very similar to the basic model serving with a few
+caveats:
+
+* The class to subclass changes from `ModelServing` to `DataFrameModelServing`
+* The internal data structure for the model should be either a pandas DataFrame or a
+dictionary of pandas DataFrames with string keys
+* Running the model serving requires using `run_pandas_serving` from `foxcross.pandas_serving`
+* Composing serving models requires using `compose_pandas` from `foxcross.pandas_serving`
+
 ## Basic Example
 directory structure
 ```

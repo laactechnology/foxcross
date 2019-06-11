@@ -144,3 +144,48 @@ both models come with the same set of endpoints and both perform predictions.
 Foxcross finds all classes inside your `models.py` file that subclass `ModelServing` and
 combines those into a single model serving. Foxcross uses the name of the class such as
 `AddOneModel` and `AddTwoModel` to define the routes where those models live.
+
+## Running in Production
+
+`Foxcross` leverages [uvicorn](https://github.com/encode/uvicorn) to run model serving.
+
+We recommend using [gunicorn](https://github.com/benoitc/gunicorn) to serve models in
+production. Details about running uvicorn with gunicorn can be found
+[here](https://www.uvicorn.org/deployment/#gunicorn)
+
+#### Example
+directory structure
+```
+.
++-- data.json
++-- models.py
++-- app.py
+```
+data.json
+```json
+[1,2,3,4,5]
+```
+models.py
+```python
+from foxcross.serving import ModelServing
+
+class AddOneModel(ModelServing):
+    test_data_path = "data.json"
+
+    def predict(self, data):
+        return [x + 1 for x in data]
+
+class AddTwoModel(ModelServing):
+    test_data_path = "data.json"
+    
+    def predict(self, data):
+        return [y + 2 for y in data] 
+```
+app.py
+```python
+from foxcross.serving import compose
+
+app = compose()
+```
+Assuming gunicorn has been installed, run:
+`gunicorn -k uvicorn.workers.UvicornWorker app:app`

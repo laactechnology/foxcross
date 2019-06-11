@@ -3,6 +3,7 @@
 * Added `PostProcessingError` for use with `post_process_results`
 * Included home route for every model index page
 * Removed `performance` extra install
+* Refactored model serving compose interface
 
 ## 0.5.0
 * Removed kubernetes liveness and readiness endpoints

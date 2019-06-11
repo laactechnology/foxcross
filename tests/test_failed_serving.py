@@ -38,7 +38,7 @@ def test_no_model_serving_found_error():
         [ModelServing, NoTestDataDefined, TestDataDoesNotExist, PredictMethodNotDefined],
     )
     with pytest.raises(NoModelServingFoundError):
-        runner.compose_models_serving(__name__)
+        runner.compose(__name__)
 
 
 def test_module_not_found_error():
@@ -47,7 +47,7 @@ def test_module_not_found_error():
         [ModelServing, NoTestDataDefined, TestDataDoesNotExist, PredictMethodNotDefined],
     )
     with pytest.raises(ModuleNotFoundError):
-        runner.compose_models_serving("this_does_not_exist")
+        runner.compose("this_does_not_exist")
 
 
 def test_test_data_does_not_exist():

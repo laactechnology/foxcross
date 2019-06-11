@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 
 from foxcross.enums import MediaTypes
 from foxcross.exceptions import BadDataFormatError
-from foxcross.serving import ModelServing, ModelServingRunner, compose_models_serving
+from foxcross.serving import ModelServing, ModelServingRunner, compose
 
 try:
     import ujson as json
@@ -96,7 +96,7 @@ def test_index_single_model_serving():
 
 
 def test_predict_multi_model_serving():
-    app = compose_models_serving(__name__, debug=True)
+    app = compose(__name__, debug=True)
     client = TestClient(app)
     add_one_response = client.post(
         f"{slugify(AddOneModel.__name__)}/predict/",
@@ -116,7 +116,7 @@ def test_predict_multi_model_serving():
 
 
 def test_index_multi_model_serving():
-    app = compose_models_serving(__name__, debug=True)
+    app = compose(__name__, debug=True)
     client = TestClient(app)
     add_one_response = client.get(f"{slugify(AddOneModel.__name__)}/")
     assert add_one_response.status_code == 200
@@ -136,7 +136,7 @@ def test_index_multi_model_serving():
     ],
 )
 def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected):
-    app = compose_models_serving(__name__, debug=True)
+    app = compose(__name__, debug=True)
     client = TestClient(app)
     add_one_response = client.get(
         f"{slugify(AddOneModel.__name__)}{endpoint}",
@@ -163,7 +163,7 @@ def test_bad_data_format_error():
 
 def test_single_model_compose():
     runner = ModelServingRunner(ModelServing, [ModelServing, AddFiveModel])
-    app = runner.compose_models_serving(__name__)
+    app = runner.compose(__name__)
     client = TestClient(app)
     add_one_response = client.post(
         "/predict/", headers={"Accept": MediaTypes.JSON.value}, json=add_one_data
