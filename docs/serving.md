@@ -60,7 +60,7 @@ these methods and all these methods are **optional** to define.
 * **On startup**: run model serving -> `load_model` -> model serving started
     * This process happens when you start serving your model
 * **On prediction**: `pre_process_input` -> `predict` -> `post_process_results`
-    * This process happens every time the `predict` and `predict-test` endpoint are called
+    * This process happens every time the `predict` and `predict-test` endpoints are called
 
 ### load_model
 This method allows you to load your model **on startup** and **into memory**.
