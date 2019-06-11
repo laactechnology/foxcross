@@ -53,8 +53,13 @@ that happens during the models prediction. All subclasses of `ModelServing` have
 these methods, and all these methods are **optional** to define.
 
 * `load_model`
+    * This method allows you to load your model **on startup** and **into memory**.
 * `pre_process_input`
+    * The `pre_process_input` method allows you to transform your input data prior to a
+    prediction.
 * `post_process_results`
+    * The `post_process_results` method allows you to transform your prediction results
+    prior to them being returned.
 
 ### Hook Process
 
@@ -62,16 +67,6 @@ these methods, and all these methods are **optional** to define.
     * This process happens when you start serving your model
 * **On prediction**: `pre_process_input` -> `predict` -> `post_process_results`
     * This process happens every time the `predict` and `predict-test` endpoints are called
-
-### load_model
-This method allows you to load your model **on startup** and **into memory**.
-
-### pre_process_input
-The `pre_process_input` method allows you to transform your input data prior to a prediction.
-
-### post_process_results
-The `post_process_results` method allows you to transform your prediction results prior to
-them being returned.
 
 ### Example
 directory structure
