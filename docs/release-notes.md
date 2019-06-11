@@ -1,3 +1,7 @@
+## 0.6.0
+* Added `PreProcessingError` for use with `pre_process_input`
+* Added  `PostProcessingError` for use with `post_process_results`
+
 ## 0.5.0
 * Removed kubernetes liveness and readiness endpoints
 * Decoupled formatting of input and output data from processing hooks
