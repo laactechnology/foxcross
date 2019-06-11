@@ -8,3 +8,11 @@ class BadDataFormatError(Exception):
 
 class TestDataPathUndefinedError(Exception):
     pass
+
+
+class PreProcessingError(Exception):
+    pass
+
+
+class PostProcessingError(Exception):
+    pass

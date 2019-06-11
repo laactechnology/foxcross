@@ -45,6 +45,18 @@ class DataFrameModelServing(ModelServing):
             "You must implement your model serving's predict method"
         )
 
+    def pre_process_input(
+        self, data: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
+    ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
+        """Hook to enable pre-processing of input data"""
+        return super().pre_process_input(data)
+
+    def post_process_results(
+        self, data: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
+    ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
+        """Hook to enable post-processing of output data"""
+        return super().post_process_results(data)
+
     def _format_input(
         self, data: Dict
     ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
