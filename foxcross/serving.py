@@ -169,5 +169,5 @@ class ModelServing(Starlette):
 
 
 _model_serving_runner = ModelServingRunner(ModelServing, [ModelServing])
-compose = _model_serving_runner.compose
+compose_models = _model_serving_runner.compose
 run_model_serving = _model_serving_runner.run_model_serving

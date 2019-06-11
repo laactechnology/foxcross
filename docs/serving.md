@@ -183,9 +183,9 @@ class AddTwoModel(ModelServing):
 ```
 app.py
 ```python
-from foxcross.serving import compose
+from foxcross.serving import compose_models
 
-app = compose()
+app = compose_models()
 ```
 Assuming gunicorn has been installed, run:
 `gunicorn -k uvicorn.workers.UvicornWorker app:app`
