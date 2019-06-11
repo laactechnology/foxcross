@@ -57,7 +57,7 @@ endpoint</li>
 <h3 id="hook-overview">Hook Overview</h3>
 <p><code>Foxcross</code> contains two sets of hooks. One set that happens on serving startup and one set
 that happens during the models prediction. All subclasses of <code>ModelServing</code> have access to
-these methods and all these methods are <strong>optional</strong> to define.</p>
+these methods, and all these methods are <strong>optional</strong> to define.</p>
 <ul>
 <li><code>load_model</code></li>
 <li><code>pre_process_input</code></li>
@@ -70,7 +70,7 @@ these methods and all these methods are <strong>optional</strong> to define.</p>
 </ul>
 </li>
 <li><strong>On prediction</strong>: <code>pre_process_input</code> -&gt; <code>predict</code> -&gt; <code>post_process_results</code><ul>
-<li>This process happens every time the <code>predict</code> and <code>predict-test</code> endpoint are called</li>
+<li>This process happens every time the <code>predict</code> and <code>predict-test</code> endpoints are called</li>
 </ul>
 </li>
 </ul>
