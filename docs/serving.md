@@ -28,20 +28,21 @@ class AddOneModel(ModelServing):
         return [x + 1 for x in data]
 ```
 
-Doing this gives your model four endpoints:
+## Serving Endpoints
+Subclassing any class that inherits from `ModelServing` gives you four endpoints:
 
 * `/` (root endpoint)
-    * Shows you the different endpoints for you model
+    * Shows you the different endpoints and HTTP methods for your model
     * Allows you to navigate to those endpoints
 * `/predict/`
     * Allows users to POST their input data and receive a prediction from your model
 * `/predict-test/`
-    * Uses the `test_data_path` to read your test data and use it to do a prediction
+    * Uses the `test_data_path` to read your test data and do a prediction with the test data
     * Allows you and your users to test that your prediction is working as expected
-    through a GET
+    through a GET request
 * `/input-format/`
-    * Reads the `test_data_path` and returns it through a GET
-    * Allows you and your users to see what the model expects as input through the predict
+    * Reads the `test_data_path` and returns the data through a GET request
+    * Allows you and your users to see what the model expects as input for the predict
     endpoint
 
 ## Serving Hooks
