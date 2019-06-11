@@ -2,6 +2,7 @@
 * Added `PreProcessingError` for use with `pre_process_input`
 * Added `PostProcessingError` for use with `post_process_results`
 * Included home route for every model index page
+* Removed `performance` extra install
 
 ## 0.5.0
 * Removed kubernetes liveness and readiness endpoints

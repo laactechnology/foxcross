@@ -65,7 +65,6 @@ pytest-cov = "^2.7"
 modin = ["modin"]
 ujson = ["ujson"]
 pandas = ["pandas"]
-performance = ["modin", "ujson"]
 
 [tool.black]
 line-length = 90
