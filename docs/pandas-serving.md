@@ -1,5 +1,5 @@
 # Pandas Serving
-**Make sure you have installed foxcross with the pandas extra using:**
+**Make sure you have installed Foxcross with the pandas extra using:**
 
 `pip install foxcross[pandas]`
 

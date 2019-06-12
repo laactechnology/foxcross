@@ -52,3 +52,25 @@ from foxcross.serving import compose_models
 
 app = compose_models(redirect_https=True)
 ```
+
+## Performance Improvements
+
+To help improve performance, Foxcross supports using extra packages.
+
+#### UJSON
+
+[UJSON](https://github.com/esnme/ultrajson) is supported to speed up JSON serialization and
+deserialization.
+
+To install `ujson` with Foxcross, use:
+```bash
+pip install foxcross[ujson]
+```
+
+#### Modin
+[Modin](https://github.com/modin-project/modin) is supported to speed up `pandas` operations.
+
+To install `modin` with Foxcross, use:
+```bash
+pip install foxcross[modin]
+```

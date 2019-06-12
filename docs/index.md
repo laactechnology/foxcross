@@ -58,9 +58,9 @@ and Scikit-Learn do not come with a built in serving library similar to TensorFl
 To fill this gap, people create Flask applications to serve their model. This can be error
 prone, and the implementation can differ between each model. Additionally, Flask is a
 [WSGI](https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface)
-web framework, whereas `Foxcross` is built on [Starlette](https://www.starlette.io/), a
+web framework, whereas Foxcross is built on [Starlette](https://www.starlette.io/), a
 more performant [ASGI](https://asgi.readthedocs.io/en/latest/) web framework.
 
-`Foxcross` aims to be the serving library for data science models built with frameworks
-that do not come with their own serving library. Using `Foxcross` enables consistent
+Foxcross aims to be the serving library for data science models built with frameworks
+that do not come with their own serving library. Using Foxcross enables consistent
 and testable serving of data science models.

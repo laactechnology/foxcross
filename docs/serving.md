@@ -1,7 +1,7 @@
 # Serving
 
 ## Basic Overview
-To serve a data science model with `Foxcross`, you must do three things:
+To serve a data science model with Foxcross, you must do three things:
 
 * create a class that inherits from `ModelServing`
 * define a `predict` method on the class that returns JSON serializable data
@@ -48,7 +48,7 @@ Subclassing any class that inherits from `ModelServing` gives you four endpoints
 ## Serving Hooks
 
 ### Hook Overview
-`Foxcross` contains two sets of hooks. One set that happens on serving startup and one set
+Foxcross contains two sets of hooks. One set that happens on serving startup and one set
 that happens during the models prediction. All subclasses of `ModelServing` have access to
 these methods, and all these methods are **optional** to define.
 
@@ -102,7 +102,7 @@ class RandomForest(ModelServing):
 ```
 ## Exception Handling
 
-`Foxcross` comes with custom exceptions for the various methods on the `ModelServing` class.
+Foxcross comes with custom exceptions for the various methods on the `ModelServing` class.
 When raised, the exception message and the correct HTTP status code are returned to the user.
 
 #### Custom Exceptions
@@ -160,7 +160,7 @@ class RandomForest(ModelServing):
 
 ## Serving multiple models
 
-`Foxcross` enables you to compose and serve multiple models from a single place.
+Foxcross enables you to compose and serve multiple models from a single place.
 
 #### Example
 directory structure
@@ -204,7 +204,7 @@ combines those into a single model serving. Foxcross uses the name of the class 
 
 ## Running in Production
 
-`Foxcross` leverages [uvicorn](https://github.com/encode/uvicorn) to run model serving.
+Foxcross leverages [uvicorn](https://github.com/encode/uvicorn) to run model serving.
 
 We recommend using [gunicorn](https://github.com/benoitc/gunicorn) to serve models in
 production. Details about running uvicorn with gunicorn can be found
@@ -245,4 +245,6 @@ from foxcross.serving import compose_models
 app = compose_models()
 ```
 Assuming gunicorn has been installed, run:
-`gunicorn -k uvicorn.workers.UvicornWorker app:app`
+```bash
+gunicorn -k uvicorn.workers.UvicornWorker app:app
+```
