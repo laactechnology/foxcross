@@ -60,6 +60,7 @@ pymdown-extensions = "^6.0"
 requests = "^2.22"
 coverage = "^4.5"
 pytest-cov = "^2.7"
+tomlkit = "^0.5.3"
 
 [tool.poetry.extras]
 modin = ["modin"]
