@@ -45,6 +45,18 @@ class DataFrameModelServing(ModelServing):
             "You must implement your model serving's predict method"
         )
 
+    def pre_process_input(
+        self, data: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
+    ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
+        """Hook to enable pre-processing of input data"""
+        return super().pre_process_input(data)
+
+    def post_process_results(
+        self, data: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
+    ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
+        """Hook to enable post-processing of output data"""
+        return super().post_process_results(data)
+
     def _format_input(
         self, data: Dict
     ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
@@ -78,5 +90,5 @@ class DataFrameModelServing(ModelServing):
 _model_serving_runner = ModelServingRunner(
     ModelServing, [ModelServing, DataFrameModelServing]
 )
-compose_pandas_serving = _model_serving_runner.compose_models_serving
+compose_pandas = _model_serving_runner.compose
 run_pandas_serving = _model_serving_runner.run_model_serving

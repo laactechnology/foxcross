@@ -8,8 +8,12 @@ from slugify import slugify
 from starlette.testclient import TestClient
 
 from foxcross.enums import MediaTypes
-from foxcross.exceptions import BadDataFormatError
-from foxcross.serving import ModelServing, ModelServingRunner, compose_models_serving
+from foxcross.exceptions import (
+    BadDataFormatError,
+    PostProcessingError,
+    PreProcessingError,
+)
+from foxcross.serving import ModelServing, ModelServingRunner, compose_models
 
 try:
     import ujson as json
@@ -34,6 +38,47 @@ with Path(add_five_data_path).open() as f:
 
 with Path(__location__ / "data/add_five_result.json").open() as f:
     add_five_result_data = json.load(f)
+
+
+class PostProcessErrorModel(ModelServing):
+    test_data_path = add_one_data_path
+
+    def predict(self, data: Any) -> Any:
+        return [x + 1 for x in data]
+
+    def post_process_results(self, data: Any) -> Any:
+        try:
+            data.pop("stuff")
+        except TypeError:
+            raise PostProcessingError("Issue post processing")
+
+
+class PreProcessErrorModel(ModelServing):
+    test_data_path = add_one_data_path
+
+    def predict(self, data: Any) -> Any:
+        return [x + 1 for x in data]
+
+    def pre_process_input(self, data: Any) -> Any:
+        try:
+            data.pop("stuff")
+        except TypeError:
+            raise PreProcessingError("Issue pre processing")
+
+
+class StatusCodeOverrideModel(ModelServing):
+    test_data_path = add_one_data_path
+
+    def predict(self, data: Any) -> Any:
+        return [x + 1 for x in data]
+
+    def pre_process_input(self, data: Any) -> Any:
+        try:
+            data.pop("stuff")
+        except TypeError:
+            new_exc = PreProcessingError("Issue pre processing")
+            new_exc.http_status_code = 420
+            raise new_exc
 
 
 class AddOneModel(ModelServing):
@@ -96,7 +141,7 @@ def test_index_single_model_serving():
 
 
 def test_predict_multi_model_serving():
-    app = compose_models_serving(__name__, debug=True)
+    app = compose_models(__name__, debug=True)
     client = TestClient(app)
     add_one_response = client.post(
         f"{slugify(AddOneModel.__name__)}/predict/",
@@ -116,7 +161,7 @@ def test_predict_multi_model_serving():
 
 
 def test_index_multi_model_serving():
-    app = compose_models_serving(__name__, debug=True)
+    app = compose_models(__name__, debug=True)
     client = TestClient(app)
     add_one_response = client.get(f"{slugify(AddOneModel.__name__)}/")
     assert add_one_response.status_code == 200
@@ -136,7 +181,7 @@ def test_index_multi_model_serving():
     ],
 )
 def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected):
-    app = compose_models_serving(__name__, debug=True)
+    app = compose_models(__name__, debug=True)
     client = TestClient(app)
     add_one_response = client.get(
         f"{slugify(AddOneModel.__name__)}{endpoint}",
@@ -162,8 +207,17 @@ def test_bad_data_format_error():
 
 
 def test_single_model_compose():
-    runner = ModelServingRunner(ModelServing, [ModelServing, AddFiveModel])
-    app = runner.compose_models_serving(__name__)
+    runner = ModelServingRunner(
+        ModelServing,
+        [
+            ModelServing,
+            AddFiveModel,
+            PreProcessErrorModel,
+            PostProcessErrorModel,
+            StatusCodeOverrideModel,
+        ],
+    )
+    app = runner.compose(__name__)
     client = TestClient(app)
     add_one_response = client.post(
         "/predict/", headers={"Accept": MediaTypes.JSON.value}, json=add_one_data
@@ -239,3 +293,24 @@ def test_wrong_accept_header(endpoint):
     else:
         response = client.get(endpoint, headers={"Accept": "text/html"})
     assert response.status_code == 406
+
+
+def test_pre_processing_exception():
+    app = PreProcessErrorModel(debug=True)
+    client = TestClient(app)
+    response = client.get("/predict-test/")
+    assert response.status_code == 400
+
+
+def test_post_processing_exception():
+    app = PostProcessErrorModel(debug=True)
+    client = TestClient(app)
+    response = client.get("/predict-test/")
+    assert response.status_code == 500
+
+
+def test_override_status_code_exception():
+    app = StatusCodeOverrideModel(debug=True)
+    client = TestClient(app)
+    response = client.get("/predict-test/")
+    assert response.status_code == 420

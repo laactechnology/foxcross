@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "foxcross"
-version = "0.5.0"
+version = "0.6.0"
 description = "AsyncIO serving for data science models"
 authors = ["Steven Pate <steven@laac.dev>"]
 license = "BSD-3-Clause"
@@ -60,12 +60,12 @@ pymdown-extensions = "^6.0"
 requests = "^2.22"
 coverage = "^4.5"
 pytest-cov = "^2.7"
+tomlkit = "^0.5.3"
 
 [tool.poetry.extras]
 modin = ["modin"]
 ujson = ["ujson"]
 pandas = ["pandas"]
-performance = ["modin", "ujson"]
 
 [tool.black]
 line-length = 90

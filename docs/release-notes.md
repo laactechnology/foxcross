@@ -1,3 +1,11 @@
+## 0.6.0
+* Added `PreProcessingError` for use with `pre_process_input`
+* Added `PostProcessingError` for use with `post_process_results`
+* Included home route for every model index page
+* Removed `performance` extra install
+* Refactored model serving compose interface
+* Added ability to override HTTP status code in custom exceptions
+
 ## 0.5.0
 * Removed kubernetes liveness and readiness endpoints
 * Decoupled formatting of input and output data from processing hooks

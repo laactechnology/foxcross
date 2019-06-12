@@ -81,21 +81,13 @@ jobs:
         - pip install poetry
         - poetry install -E modin
       script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_modin_extra.py tests/test_pandas_serving.py --cov=foxcross
-    - stage: test
-      python: "3.6"
-      name: "Performance 3.6"
-      install:
-        - pip install poetry
-        - poetry install -E performance
-      script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_performance_extra.py tests/test_pandas_serving.py --cov=foxcross
-    - stage: test
-      python: "3.7"
-      name: "Performance 3.7"
-      install:
-        - pip install poetry
-        - poetry install -E performance
-      script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_performance_extra.py tests/test_pandas_serving.py --cov=foxcross
 
 after_script:
   - pip install codecov
   - codecov
+
+deploy:
+  - provider: script
+    script: ./scripts/deploy.sh
+    on:
+      branch: master

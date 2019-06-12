@@ -20,7 +20,7 @@ class ModelServingRunner:
         self._excluded_classes = excluded_classes
         self._base_class = base_class
 
-    def compose_models_serving(self, module_name: str = "models", **kwargs) -> ASGIApp:
+    def compose(self, module_name: str = "models", **kwargs) -> ASGIApp:
         try:
             python_module = importlib.import_module(module_name)
         except ModuleNotFoundError as exc:
@@ -48,5 +48,5 @@ class ModelServingRunner:
         return model_serving
 
     def run_model_serving(self, module_name: str = "models", **kwargs):
-        asgi_app = self.compose_models_serving(module_name, **kwargs)
+        asgi_app = self.compose(module_name, **kwargs)
         uvicorn.run(asgi_app, **kwargs)
