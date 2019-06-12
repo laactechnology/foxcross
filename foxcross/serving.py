@@ -89,35 +89,33 @@ class ModelServing(Starlette):
         self._validate_http_headers(request, "accept", self._media_types, 406)
         json_data = await request.json()
         formatted_data = self._format_input(json_data)
-        try:
-            pre_processed_input = self.pre_process_input(formatted_data)
-        except PreProcessingError as exc:
-            raise HTTPException(status_code=400, detail=str(exc))
-        try:
-            results = self.predict(pre_processed_input)
-        except BadDataFormatError as exc:
-            logger.warning(f"Bad data format inputted to the predict endpoint: {exc}")
-            raise HTTPException(status_code=400, detail=str(exc))
-        try:
-            processed_results = self.post_process_results(results)
-        except PostProcessingError as exc:
-            raise HTTPException(status_code=500, detail=str(exc))
+        processed_results = self._process_prediction(formatted_data)
         return self._format_output(processed_results)
 
     async def _predict_test_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
         formatted_data = self._format_input(test_data)
+        processed_results = self._process_prediction(formatted_data)
+        return self._format_output(processed_results)
+
+    def _process_prediction(self, formatted_data):
         try:
             pre_processed_input = self.pre_process_input(formatted_data)
         except PreProcessingError as exc:
-            raise HTTPException(status_code=400, detail=str(exc))
-        results = self.predict(pre_processed_input)
+            logger.warning(str(exc))
+            raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
+        try:
+            results = self.predict(pre_processed_input)
+        except BadDataFormatError as exc:
+            logger.warning(str(exc))
+            raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
         try:
             processed_results = self.post_process_results(results)
         except PostProcessingError as exc:
-            raise HTTPException(status_code=500, detail=str(exc))
-        return self._format_output(processed_results)
+            logger.warning(str(exc))
+            raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
+        return processed_results
 
     async def _input_format_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._media_types, 406)

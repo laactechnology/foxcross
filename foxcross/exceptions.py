@@ -3,7 +3,7 @@ class NoModelServingFoundError(Exception):
 
 
 class BadDataFormatError(Exception):
-    pass
+    http_status_code = 400
 
 
 class TestDataPathUndefinedError(Exception):
@@ -11,8 +11,8 @@ class TestDataPathUndefinedError(Exception):
 
 
 class PreProcessingError(Exception):
-    pass
+    http_status_code = 400
 
 
 class PostProcessingError(Exception):
-    pass
+    http_status_code = 500

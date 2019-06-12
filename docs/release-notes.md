@@ -4,6 +4,7 @@
 * Included home route for every model index page
 * Removed `performance` extra install
 * Refactored model serving compose interface
+* Added ability to override HTTP status code in custom exceptions
 
 ## 0.5.0
 * Removed kubernetes liveness and readiness endpoints
