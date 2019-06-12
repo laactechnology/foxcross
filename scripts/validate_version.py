@@ -4,7 +4,7 @@ from pathlib import Path
 import requests
 import tomlkit
 
-from foxcross.__version__ import __version__
+from foxcross import __version__
 
 PYPI_URL = "https://pypi.org/pypi/foxcross/json"
 
