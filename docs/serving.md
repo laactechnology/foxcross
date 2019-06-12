@@ -100,6 +100,63 @@ class RandomForest(ModelServing):
     def prep_results(self, data):
         ...
 ```
+## Exception Handling
+
+`Foxcross` comes with custom exceptions for the various methods on the `ModelServing` class.
+When raised, the exception message and the correct HTTP status code are returned to the user.
+
+#### Custom Exceptions
+
+* `BadDataFormatError`
+    * Raise inside of the `predict` method when the input data to the `predict` method is
+    incorrect
+* `PreProcessingError`
+    * Raise inside the `pre_process_input` method when an issue with pre processing the
+    input occurs
+* `PostProcessingError`
+    * Raise inside the `post_process_results` method when an issue with post processing
+    the results occurs
+
+#### Example
+```python
+from sklearn.externals import joblib
+from foxcross.serving import ModelServing
+from foxcross.exceptions import (
+    BadDataFormatError,
+    PostProcessingError,
+    PreProcessingError,
+)
+
+class RandomForest(ModelServing):
+    test_data_path = "data.json"
+    
+    def load_model(self):
+        self.model = joblib.load("random_forest.pkl")
+    
+    def pre_process_input(self, data):
+        try:
+            return self.add_missing_values(data)
+        except ValueError as exc:
+            raise PreProcessingError(f"Issue with pre processing the data: {exc}")
+    
+    def add_missing_values(self, data):
+        ...
+    
+    def predict(self, data):
+        try:
+            return self.model.predict(data)
+        except KeyError as exc:
+            raise BadDataFormatError(f"Incorrect data format. Missing key {exc}")
+    
+    def post_process_results(self, data):
+        try:
+            return self.prep_results(data)
+        except TypeError as exc:
+            raise PostProcessingError(f"Wrong type: {exc}")
+    
+    def prep_results(self, data):
+        ...
+```
 
 ## Serving multiple models
 
