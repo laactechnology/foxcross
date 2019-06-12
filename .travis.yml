@@ -85,3 +85,9 @@ jobs:
 after_script:
   - pip install codecov
   - codecov
+
+deploy:
+  - provider: script
+    script: ./scripts/deploy.sh
+    on:
+      branch: master
