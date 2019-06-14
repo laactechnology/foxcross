@@ -1,3 +1,7 @@
+## 0.7.0 (Next release)
+* Improved exception handling
+* Added more logging
+
 ## 0.6.0
 * Added `PreProcessingError` for use with `pre_process_input`
 * Added `PostProcessingError` for use with `post_process_results`
