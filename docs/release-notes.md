@@ -1,6 +1,7 @@
 ## 0.7.0 (Next release)
 * Improved exception handling
 * Added more logging
+* Renamed `BadDataFormatError` to `PredictionError`
 
 ## 0.6.0
 * Added `PreProcessingError` for use with `pre_process_input`

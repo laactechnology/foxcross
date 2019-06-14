@@ -77,13 +77,13 @@ pip install foxcross[modin]
 
 ## Overriding the HTTP status code in custom exceptions
 
-The custom exceptions, `BadDataFormatError`, `PreProcessingError`, and `PostProcessingError`
+The custom exceptions, `PredictionError`, `PreProcessingError`, and `PostProcessingError`
 come with default HTTP status codes returned to the user. These default status codes can be
 overridden using the `http_status_code` class attribute
 
 ```python
 from foxcross.serving import ModelServing
-from foxcross.exceptions import BadDataFormatError
+from foxcross.exceptions import PredictionError
 
 class AddOneModel(ModelServing):
     test_data_path = "data.json"
@@ -92,7 +92,7 @@ class AddOneModel(ModelServing):
         try:
             return [x + 1 for x in data]
         except ValueError as exc:
-            new_exc = BadDataFormatError(f"Failed to do prediction: {exc}")
+            new_exc = PredictionError(f"Failed to do prediction: {exc}")
             new_exc.http_status_code = 500
             raise new_exc
 ```

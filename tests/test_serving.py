@@ -8,11 +8,7 @@ from slugify import slugify
 from starlette.testclient import TestClient
 
 from foxcross.enums import MediaTypes
-from foxcross.exceptions import (
-    BadDataFormatError,
-    PostProcessingError,
-    PreProcessingError,
-)
+from foxcross.exceptions import PostProcessingError, PredictionError, PreProcessingError
 from foxcross.serving import ModelServing, ModelServingRunner, compose_models
 
 try:
@@ -88,7 +84,7 @@ class AddOneModel(ModelServing):
         try:
             return [x + 1 for x in data]
         except TypeError:
-            raise BadDataFormatError("Must be a list")
+            raise PredictionError("Must be a list")
 
 
 class AddAnyModel:

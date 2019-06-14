@@ -2,7 +2,7 @@ class NoModelServingFoundError(Exception):
     pass
 
 
-class BadDataFormatError(Exception):
+class PredictionError(Exception):
     http_status_code = 400
 
 

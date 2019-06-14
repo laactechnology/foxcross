@@ -107,9 +107,8 @@ When raised, the exception message and the correct HTTP status code are returned
 
 #### Custom Exceptions
 
-* `BadDataFormatError`
-    * Raise inside of the `predict` method when the input data to the `predict` method is
-    incorrect
+* `PredictionError`
+    * Raise inside of the `predict` method when an issue occurs when performing the prediction
 * `PreProcessingError`
     * Raise inside the `pre_process_input` method when an issue with pre processing the
     input occurs
@@ -122,7 +121,7 @@ When raised, the exception message and the correct HTTP status code are returned
 from sklearn.externals import joblib
 from foxcross.serving import ModelServing
 from foxcross.exceptions import (
-    BadDataFormatError,
+    PredictionError,
     PostProcessingError,
     PreProcessingError,
 )
@@ -146,7 +145,7 @@ class RandomForest(ModelServing):
         try:
             return self.model.predict(data)
         except KeyError as exc:
-            raise BadDataFormatError(f"Incorrect data format. Missing key {exc}")
+            raise PredictionError(f"Incorrect data format. Missing key {exc}")
     
     def post_process_results(self, data):
         try:

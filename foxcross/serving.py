@@ -12,8 +12,8 @@ from starlette.requests import Request
 from .endpoints import _index_endpoint
 from .enums import MediaTypes
 from .exceptions import (
-    BadDataFormatError,
     PostProcessingError,
+    PredictionError,
     PreProcessingError,
     TestDataPathUndefinedError,
 )
@@ -112,7 +112,7 @@ class ModelServing(Starlette):
             raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
         try:
             results = self.predict(pre_processed_input)
-        except BadDataFormatError as exc:
+        except PredictionError as exc:
             logger.warning(str(exc))
             raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
         try:
