@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, List
 
 import aiofiles
 from starlette.applications import Starlette
@@ -72,7 +72,7 @@ class ModelServing(Starlette):
             "You must implement your model serving's predict method"
         )
 
-    async def _read_test_data(self) -> Dict:
+    async def _read_test_data(self) -> Any:
         async with aiofiles.open(self.test_data_path, mode="rb") as f:
             contents = await f.read()
         try:
