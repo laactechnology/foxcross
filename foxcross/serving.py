@@ -73,14 +73,19 @@ class ModelServing(Starlette):
         )
 
     async def _read_test_data(self) -> Any:
-        async with aiofiles.open(self.test_data_path, mode="rb") as f:
-            contents = await f.read()
+        try:
+            async with aiofiles.open(self.test_data_path, mode="rb") as f:
+                contents = await f.read()
+        except FileNotFoundError as exc:
+            err_msg = f"Error reading {self.test_data_path}: {exc}"
+            logger.error(err_msg)
+            raise HTTPException(status_code=500, detail=err_msg)
         try:
             return json.loads(contents.decode("utf-8"))
         except TypeError as exc:
-            raise HTTPException(
-                status_code=500, detail=f"Failed to load test data: {exc}"
-            )
+            err_msg = f"Failed to load test data into JSON: {exc}"
+            logger.error(err_msg)
+            raise HTTPException(status_code=500, detail=err_msg)
 
     async def _predict_endpoint(self, request: Request) -> JSONResponse:
         if request.method == "HEAD":
@@ -146,10 +151,9 @@ class ModelServing(Starlette):
         try:
             return JSONResponse(data)
         except TypeError as exc:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Error trying to serialize response data to JSON: {exc}",
-            )
+            err_msg = f"Error trying to serialize response data to JSON: {exc}"
+            logger.error(err_msg)
+            raise HTTPException(status_code=500, detail=err_msg)
 
     def pre_process_input(self, data: Any) -> Any:
         """Hook to enable pre-processing of input data"""

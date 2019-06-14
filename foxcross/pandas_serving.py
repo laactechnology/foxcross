@@ -79,11 +79,18 @@ class DataFrameModelServing(ModelServing):
                 orient=self.pandas_orient
             )
         except AttributeError:
-            results = {
-                key: value.replace({numpy.nan: None}).to_dict(orient=self.pandas_orient)
-                for key, value in results.items()
-            }
-            results["multi_dataframe"] = True
+            try:
+                results = {
+                    key: value.replace({numpy.nan: None}).to_dict(
+                        orient=self.pandas_orient
+                    )
+                    for key, value in results.items()
+                }
+                results["multi_dataframe"] = True
+            except AttributeError as exc:
+                err_msg = f"Failed to format prediction results: {exc}"
+                logger.error(err_msg)
+                raise HTTPException(status_code=500, detail=err_msg)
         return self._get_response(results)
 
 
