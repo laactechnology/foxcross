@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 from typing import Dict, Union
 
@@ -6,6 +7,7 @@ import pytest
 from slugify import slugify
 from starlette.testclient import TestClient
 
+from foxcross.constants import SLUGIFY_REGEX, SLUGIFY_REPLACE
 from foxcross.enums import MediaTypes
 from foxcross.pandas_serving import DataFrameModelServing, compose_pandas
 
@@ -137,16 +139,22 @@ def test_index_single_model_serving():
 def test_predict_multi_model_serving():
     app = compose_pandas(__name__, debug=True)
     client = TestClient(app)
+    interp_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateModelServing.__name__)
+    )
     response = client.post(
-        f"{slugify(InterpolateModelServing.__name__)}/predict/",
+        f"{interp_slugified}/predict/",
         headers={"Accept": MediaTypes.JSON.value},
         json=interpolate_data,
     )
     assert response.status_code == 200
     assert response.json() == interpolate_result_data
 
+    multi_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateMultiFrameModelServing.__name__)
+    )
     multi_response = client.post(
-        f"{slugify(InterpolateMultiFrameModelServing.__name__)}/predict/",
+        f"{multi_slugified}/predict/",
         headers={"Accept": MediaTypes.JSON.value},
         json=interpolate_multi_frame_data,
     )
@@ -157,10 +165,17 @@ def test_predict_multi_model_serving():
 def test_index_multi_model_serving():
     app = compose_pandas(__name__, debug=True)
     client = TestClient(app)
-    response = client.get(f"{slugify(InterpolateModelServing.__name__)}/")
+
+    interp_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateModelServing.__name__)
+    )
+    response = client.get(f"{interp_slugified}/")
     assert response.status_code == 200
 
-    multi_response = client.get(f"{slugify(InterpolateMultiFrameModelServing.__name__)}/")
+    multi_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateMultiFrameModelServing.__name__)
+    )
+    multi_response = client.get(f"{multi_slugified}/")
     assert multi_response.status_code == 200
 
     root_response = client.get("/")
@@ -184,23 +199,30 @@ def test_endpoints_multi_model_serving(
 ):
     app = compose_pandas(__name__, debug=True)
     client = TestClient(app)
+
+    interp_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateModelServing.__name__)
+    )
     response = client.get(
-        f"{slugify(InterpolateModelServing.__name__)}{endpoint}",
-        headers={"Accept": MediaTypes.JSON.value},
+        f"{interp_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert response.status_code == 200
     assert response.json() == first_expected
 
+    multi_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateMultiFrameModelServing.__name__)
+    )
     multi_response = client.get(
-        f"{slugify(InterpolateMultiFrameModelServing.__name__)}{endpoint}",
-        headers={"Accept": MediaTypes.JSON.value},
+        f"{multi_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert multi_response.status_code == 200
     assert multi_response.json() == second_expected
 
+    add_one_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
+    )
     add_one_response = client.get(
-        f"{slugify(AddOneModel.__name__)}{endpoint}",
-        headers={"Accept": MediaTypes.JSON.value},
+        f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert add_one_response.status_code == 200
     assert add_one_response.json() == third_expected

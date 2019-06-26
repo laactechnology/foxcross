@@ -2,6 +2,8 @@
 * Improved exception handling
 * Added more logging
 * Renamed `BadDataFormatError` to `PredictionError`
+* Updated route name generation in `runner.ModelServingRunner.compose` to create
+better urls
 
 ## 0.6.0
 * Added `PreProcessingError` for use with `pre_process_input`

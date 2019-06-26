@@ -1,6 +1,7 @@
 import importlib
 import inspect
 import logging
+import re
 import sys
 from typing import Any, List
 
@@ -9,6 +10,7 @@ from slugify import slugify
 from starlette.applications import Starlette
 from starlette.types import ASGIApp
 
+from .constants import SLUGIFY_REGEX, SLUGIFY_REPLACE
 from .endpoints import _index_endpoint
 from .exceptions import NoModelServingFoundError
 
@@ -43,7 +45,10 @@ class ModelServingRunner:
         else:
             model_serving = Starlette(**kwargs)
             for asgi_app in serving_models:
-                model_serving.mount(f"/{slugify(asgi_app.__name__)}", asgi_app(**kwargs))
+                slugified_app_name = slugify(
+                    re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, asgi_app.__name__)
+                )
+                model_serving.mount(f"/{slugified_app_name}", asgi_app(**kwargs))
             model_serving.add_route("/", _index_endpoint, methods=["GET"])
         return model_serving
 
