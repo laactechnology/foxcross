@@ -1,4 +1,5 @@
 import logging
+import re
 from pathlib import Path
 from typing import Any, List
 
@@ -9,6 +10,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.requests import Request
 
+from .constants import SLUGIFY_REGEX, SLUGIFY_REPLACE
 from .endpoints import _index_endpoint
 from .enums import MediaTypes
 from .exceptions import (
@@ -31,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 class ModelServing(Starlette):
     test_data_path = None
+    model_name = None
 
     def __init__(
         self, redirect_https: bool = False, gzip_response: bool = True, **kwargs
@@ -58,6 +61,10 @@ class ModelServing(Starlette):
             MediaTypes.ANY_APP.value,
             MediaTypes.JSON.value,
         ]
+        if self.model_name is None:
+            self.model_name = re.sub(
+                SLUGIFY_REGEX, SLUGIFY_REPLACE, self.__class__.__name__
+            )
 
     def load_model(self):
         """Hook to load a model or models"""

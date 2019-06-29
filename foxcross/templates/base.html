@@ -15,26 +15,37 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
-                       role="button" data-toggle="dropdown" aria-haspopup="true"
-                       aria-expanded="false">
-                        Routes
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        {% for route in routes %}
-                            {% if route.path != "/" %}
-                                <a class="dropdown-item"
-                                   href=".{{ route.path }}">{{ route.path | replace("/", "") }}</a>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="https://www.foxcross.dev">Foxcross Docs</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Serving Home</a>
+                </li>
+                {% for obj in mounts %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#"
+                           id="navbarDropdown"
+                           role="button" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false">
+                            {{ obj.app.model_name }}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            {% for route in obj.routes %}
+                                {% if route.path != "/" %}
+                                    <a class="dropdown-item"
+                                       href=".{{ route.path }}">{{ route.path | replace("/", "") }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </li>
+                {% endfor %}
+                {% for ro in routes %}
+                    {% if ro.path != "/" %}
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href=".{{ ro.path }}">{{ ro.path | replace("/", "") }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
             </ul>
         </div>
     </div>
