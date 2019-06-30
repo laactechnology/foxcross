@@ -62,6 +62,7 @@ class ModelServing(Starlette):
         self._media_types = [
             MediaTypes.ANY.value,
             MediaTypes.ANY_APP.value,
+            MediaTypes.ANY_TEXT.value,
             MediaTypes.JSON.value,
             MediaTypes.HTML.value,
         ]
@@ -120,12 +121,7 @@ class ModelServing(Starlette):
         formatted_data = self._format_input(test_data)
         processed_results = self._process_prediction(formatted_data)
         formatted_output = self._format_output(processed_results)
-        if MediaTypes.HTML.value in request.headers["accept"]:
-            return templates.TemplateResponse(
-                "predict_test.html", {"request": request, "output_data": formatted_output}
-            )
-        else:
-            return self._get_json_response(formatted_output)
+        return self._get_response(request, formatted_output)
 
     def _process_prediction(self, formatted_data):
         try:
@@ -150,12 +146,20 @@ class ModelServing(Starlette):
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        if MediaTypes.HTML.value in request.headers["accept"]:
+        return self._get_response(request, test_data)
+
+    def _get_response(
+        self, request: Request, data: Any
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
+        if any(
+            x in request.headers["accept"]
+            for x in (MediaTypes.HTML.value, MediaTypes.ANY_TEXT.value)
+        ):
             return templates.TemplateResponse(
-                "input_format.html", {"request": request, "output_data": test_data}
+                "input_format.html", {"request": request, "output_data": data}
             )
         else:
-            return self._get_json_response(test_data)
+            return self._get_json_response(data)
 
     @staticmethod
     def _validate_http_headers(
