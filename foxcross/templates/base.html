@@ -18,7 +18,7 @@
                     <a class="nav-link" href="/">Home</a>
                 </li>
                 {% for obj in request.scope.router.routes %}
-                    {% if obj | has_attr("routes") %}
+                    {% if obj | hasattr("routes") %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#"
                                id="navbarDropdown"
@@ -36,7 +36,7 @@
                                 {% endfor %}
                             </div>
                         </li>
-                    {% elif obj | has_attr("path") %}
+                    {% elif obj | hasattr("path") %}
                         {% if obj.path != "/" %}
                             <li class="nav-item">
                                 <a class="nav-link"
