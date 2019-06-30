@@ -1,7 +1,7 @@
 import logging
 import re
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Union
 
 import aiofiles
 from starlette.applications import Starlette
@@ -9,6 +9,7 @@ from starlette.exceptions import HTTPException
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.requests import Request
+from starlette.templating import Jinja2Templates
 
 from .constants import SLUGIFY_REGEX, SLUGIFY_REPLACE
 from .endpoints import _index_endpoint
@@ -20,6 +21,7 @@ from .exceptions import (
     TestDataPathUndefinedError,
 )
 from .runner import ModelServingRunner
+from .templates import templates
 
 try:
     import ujson as json
@@ -27,6 +29,7 @@ try:
 except ImportError:
     import json
     from starlette.responses import JSONResponse
+
 
 logger = logging.getLogger(__name__)
 
@@ -103,14 +106,14 @@ class ModelServing(Starlette):
         json_data = await request.json()
         formatted_data = self._format_input(json_data)
         processed_results = self._process_prediction(formatted_data)
-        return self._format_output(processed_results)
+        return self._format_output(request, processed_results)
 
     async def _predict_test_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
         formatted_data = self._format_input(test_data)
         processed_results = self._process_prediction(formatted_data)
-        return self._format_output(processed_results)
+        return self._format_output(request, processed_results)
 
     def _process_prediction(self, formatted_data):
         try:
@@ -133,7 +136,10 @@ class ModelServing(Starlette):
     async def _input_format_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        return self._get_response(test_data)
+        if MediaTypes.HTML.value in request.headers["accept"]:
+            pass
+        else:
+            return self._get_json_response(test_data)
 
     @staticmethod
     def _validate_http_headers(
@@ -155,7 +161,7 @@ class ModelServing(Starlette):
             raise HTTPException(status_code=invalid_status_code, detail=err_msg)
 
     @staticmethod
-    def _get_response(data: Any) -> JSONResponse:
+    def _get_json_response(data: Any) -> JSONResponse:
         try:
             return JSONResponse(data)
         except TypeError as exc:
@@ -174,8 +180,15 @@ class ModelServing(Starlette):
     def _format_input(self, data: Any) -> Any:
         return data
 
-    def _format_output(self, results: Any) -> JSONResponse:
-        return self._get_response(results)
+    def _format_output(
+        self, request: Request, results: Any
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
+        if MediaTypes.HTML.value in request.headers["accept"]:
+            return templates.TemplateResponse(
+                "endpoint.html", {"request": request, "output_data": results}
+            )
+        else:
+            return self._get_json_response(results)
 
 
 _model_serving_runner = ModelServingRunner(ModelServing, [ModelServing])

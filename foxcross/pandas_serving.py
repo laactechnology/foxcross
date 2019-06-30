@@ -2,6 +2,7 @@ import logging
 from typing import Dict, Union
 
 from starlette.exceptions import HTTPException
+from starlette.requests import Request
 
 from .runner import ModelServingRunner
 from .serving import ModelServing
@@ -71,27 +72,27 @@ class DataFrameModelServing(ModelServing):
             raise HTTPException(status_code=400, detail=err_msg)
 
     def _format_output(
-        self, results: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
+        self,
+        request: Request,
+        results: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]],
     ) -> JSONResponse:
         # Convert NaNs to Nones to handle ujson OverflowError
         try:
-            results = results.replace({numpy.nan: None}).to_dict(
-                orient=self.pandas_orient
-            )
+            output = results.replace({numpy.nan: None}).to_dict(orient=self.pandas_orient)
         except AttributeError:
             try:
-                results = {
+                output = {
                     key: value.replace({numpy.nan: None}).to_dict(
                         orient=self.pandas_orient
                     )
                     for key, value in results.items()
                 }
-                results["multi_dataframe"] = True
+                output["multi_dataframe"] = True
             except AttributeError as exc:
                 err_msg = f"Failed to format prediction results: {exc}"
                 logger.error(err_msg)
                 raise HTTPException(status_code=500, detail=err_msg)
-        return self._get_response(results)
+        return super()._format_output(request, output)
 
 
 _model_serving_runner = ModelServingRunner(

@@ -5,6 +5,7 @@
 * Updated route name generation in `runner.ModelServingRunner.compose` to create
 better urls
 * Added bootstrap 4 to improve model frontend
+* Created HTML output for all endpoints
 
 ## 0.6.0
 * Added `PreProcessingError` for use with `pre_process_input`
