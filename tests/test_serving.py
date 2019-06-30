@@ -329,3 +329,32 @@ def test_override_status_code_exception():
     client = TestClient(app)
     response = client.get("/predict-test/")
     assert response.status_code == 420
+
+
+@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+def test_single_model_html_responses(endpoint):
+    app = AddOneModel(debug=True)
+    client = TestClient(app)
+    response = client.get(endpoint, headers={"Accept": MediaTypes.HTML.value})
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+def test_multi_model_html_responses(endpoint):
+    app = compose_models(__name__, debug=True)
+    client = TestClient(app)
+    add_one_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
+    )
+    add_one_response = client.get(
+        f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.HTML.value}
+    )
+    assert add_one_response.status_code == 200
+
+    add_five_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddFiveModel.__name__)
+    )
+    add_five_response = client.get(
+        f"{add_five_slugified}{endpoint}", headers={"Accept": MediaTypes.HTML.value}
+    )
+    assert add_five_response.status_code == 200

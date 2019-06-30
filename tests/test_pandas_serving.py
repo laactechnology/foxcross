@@ -246,3 +246,41 @@ def test_predict_input_issue():
         "/predict/", headers={"Accept": MediaTypes.JSON.value}, json=[]
     )
     assert multi_response.status_code == 400
+
+
+@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+def test_single_model_html_responses(endpoint):
+    app = InterpolateMultiFrameModelServing(debug=True)
+    client = TestClient(app)
+    response = client.get(endpoint, headers={"Accept": MediaTypes.HTML.value})
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+def test_multi_model_html_responses(endpoint):
+    app = compose_pandas(__name__, debug=True)
+    client = TestClient(app)
+
+    interp_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateModelServing.__name__)
+    )
+    response = client.get(
+        f"{interp_slugified}{endpoint}", headers={"Accept": MediaTypes.HTML.value}
+    )
+    assert response.status_code == 200
+
+    multi_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateMultiFrameModelServing.__name__)
+    )
+    multi_response = client.get(
+        f"{multi_slugified}{endpoint}", headers={"Accept": MediaTypes.HTML.value}
+    )
+    assert multi_response.status_code == 200
+
+    add_one_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
+    )
+    add_one_response = client.get(
+        f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.HTML.value}
+    )
+    assert add_one_response.status_code == 200
