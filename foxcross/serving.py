@@ -76,7 +76,8 @@ class ModelServing(Starlette):
         Must return JSON serializable data
         """
         raise NotImplementedError(
-            "You must implement your model serving's predict method"
+            "You must implement your model serving's predict method and it must return"
+            " JSON serializable data"
         )
 
     async def _read_test_data(self) -> Any:

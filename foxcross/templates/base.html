@@ -11,14 +11,11 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="/">Foxcross Serving</a>
+        <a class="navbar-brand" href="https://www.foxcross.dev">Foxcross</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="https://www.foxcross.dev">Foxcross Docs</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Serving Home</a>
+                    <a class="nav-link" href="/">Home</a>
                 </li>
                 {% for obj in mounts %}
                     <li class="nav-item dropdown">
@@ -26,13 +23,13 @@
                            id="navbarDropdown"
                            role="button" data-toggle="dropdown" aria-haspopup="true"
                            aria-expanded="false">
-                            {{ obj.app.model_name }}
+                            {{ obj.app.model_name | replace("-", " ") }}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             {% for route in obj.routes %}
                                 {% if route.path != "/" %}
                                     <a class="dropdown-item"
-                                       href=".{{ route.path }}">{{ route.path | replace("/", "") }}</a>
+                                       href="{{ obj.path }}{{ route.path }}">{{ route.path | replace("/", "") }}</a>
                                 {% endif %}
                             {% endfor %}
                         </div>
