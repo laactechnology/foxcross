@@ -52,7 +52,7 @@ class ModelServing(Starlette):
         super().__init__(**kwargs)
         self.load_model()
         self.add_route("/", _index_endpoint, methods=["GET"])
-        self.add_route("/predict/", self._predict_endpoint, methods=["HEAD", "POST"])
+        self.add_route("/predict/", self._predict_endpoint, methods=["GET", "POST"])
         self.add_route("/predict-test/", self._predict_test_endpoint, methods=["GET"])
         self.add_route("/input-format/", self._input_format_endpoint, methods=["GET"])
         if gzip_response is True:
@@ -63,6 +63,7 @@ class ModelServing(Starlette):
             MediaTypes.ANY.value,
             MediaTypes.ANY_APP.value,
             MediaTypes.JSON.value,
+            MediaTypes.HTML.value,
         ]
         if self.model_name is None:
             self.model_name = re.sub(
@@ -98,22 +99,33 @@ class ModelServing(Starlette):
             logger.error(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
 
-    async def _predict_endpoint(self, request: Request) -> JSONResponse:
-        if request.method == "HEAD":
-            return JSONResponse()
-        self._validate_http_headers(request, "content-type", self._media_types, 415)
+    async def _predict_endpoint(
+        self, request: Request
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         self._validate_http_headers(request, "accept", self._media_types, 406)
+        if request.method == "GET":
+            return templates.TemplateResponse("predict.html", {"request": request})
+        self._validate_http_headers(request, "content-type", self._media_types, 415)
         json_data = await request.json()
         formatted_data = self._format_input(json_data)
         processed_results = self._process_prediction(formatted_data)
-        return self._format_output(request, processed_results)
+        formatted_output = self._format_output(processed_results)
+        return self._get_json_response(formatted_output)
 
-    async def _predict_test_endpoint(self, request: Request) -> JSONResponse:
+    async def _predict_test_endpoint(
+        self, request: Request
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
         formatted_data = self._format_input(test_data)
         processed_results = self._process_prediction(formatted_data)
-        return self._format_output(request, processed_results)
+        formatted_output = self._format_output(processed_results)
+        if MediaTypes.HTML.value in request.headers["accept"]:
+            return templates.TemplateResponse(
+                "predict_test.html", {"request": request, "output_data": formatted_output}
+            )
+        else:
+            return self._get_json_response(formatted_output)
 
     def _process_prediction(self, formatted_data):
         try:
@@ -133,11 +145,15 @@ class ModelServing(Starlette):
             raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
         return processed_results
 
-    async def _input_format_endpoint(self, request: Request) -> JSONResponse:
+    async def _input_format_endpoint(
+        self, request: Request
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
         if MediaTypes.HTML.value in request.headers["accept"]:
-            pass
+            return templates.TemplateResponse(
+                "input_format.html", {"request": request, "output_data": test_data}
+            )
         else:
             return self._get_json_response(test_data)
 
@@ -180,15 +196,8 @@ class ModelServing(Starlette):
     def _format_input(self, data: Any) -> Any:
         return data
 
-    def _format_output(
-        self, request: Request, results: Any
-    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
-        if MediaTypes.HTML.value in request.headers["accept"]:
-            return templates.TemplateResponse(
-                "endpoint.html", {"request": request, "output_data": results}
-            )
-        else:
-            return self._get_json_response(results)
+    def _format_output(self, results: Any) -> Any:
+        return results
 
 
 _model_serving_runner = ModelServingRunner(ModelServing, [ModelServing])

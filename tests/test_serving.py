@@ -249,10 +249,10 @@ def test_https_redirect():
     assert add_one_response.status_code == 301
 
 
-def test_predict_head_request():
+def test_predict_get_request():
     app = AddOneModel(debug=True)
     client = TestClient(app)
-    response = client.head("/predict/")
+    response = client.get("/predict/")
     assert response.status_code == 200
 
 
@@ -291,8 +291,7 @@ def test_wrong_content_type_header():
     app = AddOneModel(debug=True)
     client = TestClient(app)
     response = client.post(
-        "/predict/",
-        headers={"Accept": MediaTypes.JSON.value, "Content-Type": "text/html"},
+        "/predict/", headers={"Accept": MediaTypes.JSON.value, "Content-Type": "text/css"}
     )
     assert response.status_code == 415
 
@@ -304,10 +303,10 @@ def test_wrong_accept_header(endpoint):
     if endpoint == "/predict/":
         response = client.post(
             endpoint,
-            headers={"Accept": "text/html", "Content-Type": MediaTypes.JSON.value},
+            headers={"Accept": "text/css", "Content-Type": MediaTypes.JSON.value},
         )
     else:
-        response = client.get(endpoint, headers={"Accept": "text/html"})
+        response = client.get(endpoint, headers={"Accept": "text/css"})
     assert response.status_code == 406
 
 

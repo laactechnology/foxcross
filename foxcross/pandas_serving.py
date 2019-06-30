@@ -1,8 +1,7 @@
 import logging
-from typing import Dict, Union
+from typing import Any, Dict, Union
 
 from starlette.exceptions import HTTPException
-from starlette.requests import Request
 
 from .runner import ModelServingRunner
 from .serving import ModelServing
@@ -19,14 +18,6 @@ except ImportError:
             f"Cannot import pandas. Please install foxcross using foxcross[pandas] or"
             f" foxcross[modin]"
         )
-
-try:
-    import ujson as json
-    from starlette.responses import UJSONResponse as JSONResponse
-except ImportError:
-    import json  # noqa: F401
-    from starlette.responses import JSONResponse
-
 
 logger = logging.getLogger(__name__)
 
@@ -72,10 +63,8 @@ class DataFrameModelServing(ModelServing):
             raise HTTPException(status_code=400, detail=err_msg)
 
     def _format_output(
-        self,
-        request: Request,
-        results: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]],
-    ) -> JSONResponse:
+        self, results: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
+    ) -> Any:
         # Convert NaNs to Nones to handle ujson OverflowError
         try:
             output = results.replace({numpy.nan: None}).to_dict(orient=self.pandas_orient)
@@ -92,7 +81,7 @@ class DataFrameModelServing(ModelServing):
                 err_msg = f"Failed to format prediction results: {exc}"
                 logger.error(err_msg)
                 raise HTTPException(status_code=500, detail=err_msg)
-        return super()._format_output(request, output)
+        return output
 
 
 _model_serving_runner = ModelServingRunner(
