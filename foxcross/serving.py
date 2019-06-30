@@ -204,6 +204,6 @@ class ModelServing(Starlette):
         return results
 
 
-_model_serving_runner = ModelServingRunner(ModelServing, [ModelServing])
+_model_serving_runner = ModelServingRunner(ModelServing, (ModelServing,))
 compose_models = _model_serving_runner.compose
 run_model_serving = _model_serving_runner.run_model_serving

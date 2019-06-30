@@ -3,7 +3,7 @@ import inspect
 import logging
 import re
 import sys
-from typing import Any, List
+from typing import Any, Tuple
 
 import uvicorn
 from slugify import slugify
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class ModelServingRunner:
-    def __init__(self, base_class: Any, excluded_classes: List):
+    def __init__(self, base_class: Any, excluded_classes: Tuple):
         self._excluded_classes = excluded_classes
         self._base_class = base_class
 
