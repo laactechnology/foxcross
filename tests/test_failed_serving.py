@@ -1,4 +1,3 @@
-import decimal
 import os
 from pathlib import Path
 from typing import Any
@@ -43,13 +42,6 @@ class PredictMethodNotDefined(ModelServing):
     test_data_path = add_one_data_path
 
 
-class BadResponseData(ModelServing):
-    test_data_path = add_one_data_path
-
-    def predict(self, data: Any) -> Any:
-        return decimal.Decimal(0)
-
-
 def test_no_test_data_path_defined():
     with pytest.raises(TestDataPathUndefinedError):
         NoDataDefined()
@@ -64,7 +56,6 @@ def test_no_model_serving_found_error():
             DataDoesNotExist,
             PredictMethodNotDefined,
             BadInputData,
-            BadResponseData,
         ),
     )
     with pytest.raises(NoModelServingFoundError):
@@ -80,7 +71,6 @@ def test_module_not_found_error():
             DataDoesNotExist,
             PredictMethodNotDefined,
             BadInputData,
-            BadResponseData,
         ),
     )
     with pytest.raises(ModuleNotFoundError):
@@ -117,11 +107,4 @@ def test_bad_input_data():
     app = BadInputData(debug=True)
     client = TestClient(app)
     response = client.get("/input-format/")
-    assert response.status_code == 500
-
-
-def test_bad_response_data():
-    app = BadResponseData(debug=True)
-    client = TestClient(app)
-    response = client.get("/predict-test/")
     assert response.status_code == 500
