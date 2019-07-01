@@ -1,4 +1,4 @@
-## 0.7.0 (Next release)
+## 0.7.0
 * Improved exception handling
 * Added more logging
 * Renamed `BadDataFormatError` to `PredictionError`
