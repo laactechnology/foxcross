@@ -29,7 +29,7 @@ class AddOneModel(ModelServing):
 ```
 
 ## Serving Endpoints
-Subclassing any class that inherits from `ModelServing` gives you four endpoints:
+Subclassing `ModelServing` gives you four endpoints:
 
 * `/` (root endpoint)
     * Shows you the different endpoints and HTTP methods for your model
