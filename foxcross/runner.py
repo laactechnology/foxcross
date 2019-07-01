@@ -1,14 +1,16 @@
 import importlib
 import inspect
 import logging
+import re
 import sys
-from typing import Any, List
+from typing import Any, Dict, Tuple
 
 import uvicorn
 from slugify import slugify
 from starlette.applications import Starlette
 from starlette.types import ASGIApp
 
+from .constants import SLUGIFY_REGEX, SLUGIFY_REPLACE
 from .endpoints import _index_endpoint
 from .exceptions import NoModelServingFoundError
 
@@ -16,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class ModelServingRunner:
-    def __init__(self, base_class: Any, excluded_classes: List):
+    def __init__(self, base_class: Any, excluded_classes: Tuple):
         self._excluded_classes = excluded_classes
         self._base_class = base_class
 
@@ -43,10 +45,22 @@ class ModelServingRunner:
         else:
             model_serving = Starlette(**kwargs)
             for asgi_app in serving_models:
-                model_serving.mount(f"/{slugify(asgi_app.__name__)}", asgi_app(**kwargs))
+                slugified_app_name = slugify(
+                    re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, asgi_app.__name__)
+                )
+                model_serving.mount(f"/{slugified_app_name}", asgi_app(**kwargs))
             model_serving.add_route("/", _index_endpoint, methods=["GET"])
         return model_serving
 
-    def run_model_serving(self, module_name: str = "models", **kwargs):
-        asgi_app = self.compose(module_name, **kwargs)
-        uvicorn.run(asgi_app, **kwargs)
+    def run_model_serving(
+        self,
+        module_name: str = "models",
+        starlette_kwargs: Dict = None,
+        uvicorn_kwargs: Dict = None,
+    ):
+        if starlette_kwargs is None:
+            starlette_kwargs = {}
+        if uvicorn_kwargs is None:
+            uvicorn_kwargs = {}
+        asgi_app = self.compose(module_name, **starlette_kwargs)
+        uvicorn.run(asgi_app, **uvicorn_kwargs)

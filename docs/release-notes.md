@@ -1,3 +1,14 @@
+## 0.7.0
+* Improved exception handling
+* Added more logging
+* Renamed `BadDataFormatError` to `PredictionError`
+* Updated route name generation in `runner.ModelServingRunner.compose` to create
+better urls
+* Added bootstrap 4 to improve model frontend
+* Created HTML output for all endpoints
+* Split `kwargs` into `starlette_kwargs` and `uvicorn_kwargs` in `run_model_serving` and
+`run_pandas_serving`
+
 ## 0.6.0
 * Added `PreProcessingError` for use with `pre_process_input`
 * Added `PostProcessingError` for use with `post_process_results`

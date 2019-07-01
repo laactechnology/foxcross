@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="row">
+        <div class="col text-center">
+            <h1>{{ request.url.path }} Endpoint</h1>
+            <p class="text-info">
+                This endpoint is not usable with HTTP GET. You must POST data to this endpoint
+                to use it. To see what type of input this endpoint expects, navigate to
+                the input-format endpoint. To see what type of results you will get from this
+                endpoint, navigate to the predict-test endpoint.
+            </p>
+        </div>
+    </div>
+{% endblock content %}

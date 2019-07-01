@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -7,12 +8,9 @@ import requests
 from slugify import slugify
 from starlette.testclient import TestClient
 
+from foxcross.constants import SLUGIFY_REGEX, SLUGIFY_REPLACE
 from foxcross.enums import MediaTypes
-from foxcross.exceptions import (
-    BadDataFormatError,
-    PostProcessingError,
-    PreProcessingError,
-)
+from foxcross.exceptions import PostProcessingError, PredictionError, PreProcessingError
 from foxcross.serving import ModelServing, ModelServingRunner, compose_models
 
 try:
@@ -88,7 +86,7 @@ class AddOneModel(ModelServing):
         try:
             return [x + 1 for x in data]
         except TypeError:
-            raise BadDataFormatError("Must be a list")
+            raise PredictionError("Must be a list")
 
 
 class AddAnyModel:
@@ -143,16 +141,23 @@ def test_index_single_model_serving():
 def test_predict_multi_model_serving():
     app = compose_models(__name__, debug=True)
     client = TestClient(app)
+
+    add_one_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
+    )
     add_one_response = client.post(
-        f"{slugify(AddOneModel.__name__)}/predict/",
+        f"{add_one_slugified}/predict/",
         headers={"Accept": MediaTypes.JSON.value},
         json=add_one_data,
     )
     assert add_one_response.status_code == 200
     assert add_one_response.json() == add_one_result_data
 
+    add_five_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddFiveModel.__name__)
+    )
     add_five_response = client.post(
-        f"{slugify(AddFiveModel.__name__)}/predict/",
+        f"{add_five_slugified}/predict/",
         headers={"Accept": MediaTypes.JSON.value},
         json=add_five_data,
     )
@@ -163,10 +168,17 @@ def test_predict_multi_model_serving():
 def test_index_multi_model_serving():
     app = compose_models(__name__, debug=True)
     client = TestClient(app)
-    add_one_response = client.get(f"{slugify(AddOneModel.__name__)}/")
+
+    add_one_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
+    )
+    add_one_response = client.get(f"{add_one_slugified}/")
     assert add_one_response.status_code == 200
 
-    add_five_response = client.get(f"{slugify(AddFiveModel.__name__)}/")
+    add_five_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddFiveModel.__name__)
+    )
+    add_five_response = client.get(f"{add_five_slugified}/")
     assert add_five_response.status_code == 200
 
     root_response = client.get("/")
@@ -183,16 +195,20 @@ def test_index_multi_model_serving():
 def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected):
     app = compose_models(__name__, debug=True)
     client = TestClient(app)
+    add_one_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
+    )
     add_one_response = client.get(
-        f"{slugify(AddOneModel.__name__)}{endpoint}",
-        headers={"Accept": MediaTypes.JSON.value},
+        f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert add_one_response.status_code == 200
     assert add_one_response.json() == first_expected
 
+    add_five_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddFiveModel.__name__)
+    )
     add_five_response = client.get(
-        f"{slugify(AddFiveModel.__name__)}{endpoint}",
-        headers={"Accept": MediaTypes.JSON.value},
+        f"{add_five_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert add_five_response.status_code == 200
     assert add_five_response.json() == second_expected
@@ -233,10 +249,10 @@ def test_https_redirect():
     assert add_one_response.status_code == 301
 
 
-def test_predict_head_request():
+def test_predict_get_request():
     app = AddOneModel(debug=True)
     client = TestClient(app)
-    response = client.head("/predict/")
+    response = client.get("/predict/")
     assert response.status_code == 200
 
 
@@ -275,8 +291,7 @@ def test_wrong_content_type_header():
     app = AddOneModel(debug=True)
     client = TestClient(app)
     response = client.post(
-        "/predict/",
-        headers={"Accept": MediaTypes.JSON.value, "Content-Type": "text/html"},
+        "/predict/", headers={"Accept": MediaTypes.JSON.value, "Content-Type": "text/css"}
     )
     assert response.status_code == 415
 
@@ -288,10 +303,10 @@ def test_wrong_accept_header(endpoint):
     if endpoint == "/predict/":
         response = client.post(
             endpoint,
-            headers={"Accept": "text/html", "Content-Type": MediaTypes.JSON.value},
+            headers={"Accept": "text/css", "Content-Type": MediaTypes.JSON.value},
         )
     else:
-        response = client.get(endpoint, headers={"Accept": "text/html"})
+        response = client.get(endpoint, headers={"Accept": "text/css"})
     assert response.status_code == 406
 
 
@@ -314,3 +329,32 @@ def test_override_status_code_exception():
     client = TestClient(app)
     response = client.get("/predict-test/")
     assert response.status_code == 420
+
+
+@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+def test_single_model_html_responses(endpoint):
+    app = AddOneModel(debug=True)
+    client = TestClient(app)
+    response = client.get(endpoint, headers={"Accept": MediaTypes.HTML.value})
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+def test_multi_model_html_responses(endpoint):
+    app = compose_models(__name__, debug=True)
+    client = TestClient(app)
+    add_one_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
+    )
+    add_one_response = client.get(
+        f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.HTML.value}
+    )
+    assert add_one_response.status_code == 200
+
+    add_five_slugified = slugify(
+        re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddFiveModel.__name__)
+    )
+    add_five_response = client.get(
+        f"{add_five_slugified}{endpoint}", headers={"Accept": MediaTypes.HTML.value}
+    )
+    assert add_five_response.status_code == 200

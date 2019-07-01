@@ -64,3 +64,10 @@ more performant [ASGI](https://asgi.readthedocs.io/en/latest/) web framework.
 Foxcross aims to be the serving library for data science models built with frameworks
 that do not come with their own serving library. Using Foxcross enables consistent
 and testable serving of data science models.
+
+## Security
+
+If you believe you've found a bug with security implications, please do not disclose this
+issue in a public forum.
+
+Email us at [support@laac.dev](mailto:support@laac.dev)

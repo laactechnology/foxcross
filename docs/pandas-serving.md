@@ -34,7 +34,7 @@ models.py
 from foxcross.pandas_serving import DataFrameModelServing, run_pandas_serving
 import pandas
 
-class InterpolateModelServing(DataFrameModelServing):
+class InterpolateModel(DataFrameModelServing):
     test_data_path = "data.json"
 
     def predict(self, data: pandas.DataFrame) -> pandas.DataFrame:
@@ -52,3 +52,106 @@ python models.py
 Navigate to `localhost:8000/predict-test/` in your web browser, and you should see the
 the `null` values replaced. You can visit `localhost:8000/` to see all the available
 endpoints for your model.
+
+## Serving a dictionary of DataFrames model
+
+Foxcross `DataFrameModelServing` uses either a pandas DataFrame or a dictionary of pandas
+DataFrames as its data structure.
+
+**To serve a dictionary of DataFrames, you must add `"multi_dataframe": true` to your
+input data.**
+
+#### Example
+
+data.json
+```json
+{
+  "multi_dataframe": true,
+  "interp_dict": {
+    "A": [12,4,5,null,1],
+    "B": [null,2,54,3,null],
+    "C": [20,16,null,3,8],
+    "D": [14, 3,null,null,6]
+  },
+  "interp_list": [
+    0.0,  null, -1.0, 1.0,
+    null, 2.0, null, null,
+    2.0, 3.0, null, 9.0,
+    null, 4.0, -4.0, 16.0
+  ]
+}
+```
+models.py
+```python
+from typing import Dict
+from foxcross.pandas_serving import DataFrameModelServing
+import pandas
+
+class InterpolateMultiDataFrameModel(DataFrameModelServing):
+    test_data_path = "data.json"
+
+    def predict(
+        self, data: Dict[str, pandas.DataFrame]
+    ) -> Dict[str, pandas.DataFrame]:
+        return {
+            key: value.interpolate(limit_direction="both")
+            for key, value in data.items()
+        }
+```
+
+## Serving pandas and regular models
+
+Foxcross can serve both your regular models that inherit from `ModelServing` and 
+`DataFrameModelServing` together. You must use either `run_pandas_serving` or 
+`compose_pandas` whenever your models use `DataFrameModelServing`.
+
+#### Example
+directory structure
+```
+.
++-- add.json
++-- interpolate.json
++-- models.py
+```
+interpolate.json
+```json
+{
+  "A": [12,4,5,null,1],
+  "B": [null,2,54,3,null],
+  "C": [20,16,null,3,8],
+  "D": [14, 3,null,null,6]
+}
+```
+add.json
+```json
+[1,2,3,4,5]
+```
+models.py
+```python
+from foxcross.pandas_serving import DataFrameModelServing, run_pandas_serving
+from foxcross.serving import ModelServing
+import pandas
+
+class InterpolateModel(DataFrameModelServing):
+    test_data_path = "interpolate.json"
+
+    def predict(self, data: pandas.DataFrame) -> pandas.DataFrame:
+        return data.interpolate(limit_direction="both")
+
+class AddOneModel(ModelServing):
+    test_data_path = "add.json"
+
+    def predict(self, data):
+        return [x + 1 for x in data]
+        
+if __name__ == "__main__":
+    run_pandas_serving()
+```
+
+Run the model locally:
+```bash
+python models.py
+```
+
+Navigate to `localhost:8000/` in your web browser, and you should see both the
+`/addonemodel` and the `/interpolatemodel`.

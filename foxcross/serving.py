@@ -1,6 +1,7 @@
 import logging
+import re
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, List, Union
 
 import aiofiles
 from starlette.applications import Starlette
@@ -8,16 +9,19 @@ from starlette.exceptions import HTTPException
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.requests import Request
+from starlette.templating import Jinja2Templates
 
+from .constants import SLUGIFY_REGEX, SLUGIFY_REPLACE
 from .endpoints import _index_endpoint
 from .enums import MediaTypes
 from .exceptions import (
-    BadDataFormatError,
     PostProcessingError,
+    PredictionError,
     PreProcessingError,
     TestDataPathUndefinedError,
 )
 from .runner import ModelServingRunner
+from .templates import templates
 
 try:
     import ujson as json
@@ -26,11 +30,13 @@ except ImportError:
     import json
     from starlette.responses import JSONResponse
 
+
 logger = logging.getLogger(__name__)
 
 
 class ModelServing(Starlette):
     test_data_path = None
+    model_name = None
 
     def __init__(
         self, redirect_https: bool = False, gzip_response: bool = True, **kwargs
@@ -46,7 +52,7 @@ class ModelServing(Starlette):
         super().__init__(**kwargs)
         self.load_model()
         self.add_route("/", _index_endpoint, methods=["GET"])
-        self.add_route("/predict/", self._predict_endpoint, methods=["HEAD", "POST"])
+        self.add_route("/predict/", self._predict_endpoint, methods=["GET", "POST"])
         self.add_route("/predict-test/", self._predict_test_endpoint, methods=["GET"])
         self.add_route("/input-format/", self._input_format_endpoint, methods=["GET"])
         if gzip_response is True:
@@ -56,8 +62,14 @@ class ModelServing(Starlette):
         self._media_types = [
             MediaTypes.ANY.value,
             MediaTypes.ANY_APP.value,
+            MediaTypes.ANY_TEXT.value,
             MediaTypes.JSON.value,
+            MediaTypes.HTML.value,
         ]
+        if self.model_name is None:
+            self.model_name = re.sub(
+                SLUGIFY_REGEX, SLUGIFY_REPLACE, self.__class__.__name__
+            )
 
     def load_model(self):
         """Hook to load a model or models"""
@@ -69,35 +81,47 @@ class ModelServing(Starlette):
         Must return JSON serializable data
         """
         raise NotImplementedError(
-            "You must implement your model serving's predict method"
+            "You must implement your model serving's predict method and it must return"
+            " JSON serializable data"
         )
 
-    async def _read_test_data(self) -> Dict:
-        async with aiofiles.open(self.test_data_path, mode="rb") as f:
-            contents = await f.read()
+    async def _read_test_data(self) -> Any:
+        try:
+            async with aiofiles.open(self.test_data_path, mode="rb") as f:
+                contents = await f.read()
+        except FileNotFoundError:
+            err_msg = f"Error reading {self.test_data_path}"
+            logger.exception(err_msg)
+            raise HTTPException(status_code=500, detail=err_msg)
         try:
             return json.loads(contents.decode("utf-8"))
-        except TypeError as exc:
-            raise HTTPException(
-                status_code=500, detail=f"Failed to load test data: {exc}"
-            )
+        except (TypeError, ValueError):
+            err_msg = f"Failed to load test data into JSON"
+            logger.exception(err_msg)
+            raise HTTPException(status_code=500, detail=err_msg)
 
-    async def _predict_endpoint(self, request: Request) -> JSONResponse:
-        if request.method == "HEAD":
-            return JSONResponse()
-        self._validate_http_headers(request, "content-type", self._media_types, 415)
+    async def _predict_endpoint(
+        self, request: Request
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         self._validate_http_headers(request, "accept", self._media_types, 406)
+        if request.method == "GET":
+            return templates.TemplateResponse("predict.html", {"request": request})
+        self._validate_http_headers(request, "content-type", self._media_types, 415)
         json_data = await request.json()
         formatted_data = self._format_input(json_data)
         processed_results = self._process_prediction(formatted_data)
-        return self._format_output(processed_results)
+        formatted_output = self._format_output(processed_results)
+        return self._get_json_response(formatted_output)
 
-    async def _predict_test_endpoint(self, request: Request) -> JSONResponse:
+    async def _predict_test_endpoint(
+        self, request: Request
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
         formatted_data = self._format_input(test_data)
         processed_results = self._process_prediction(formatted_data)
-        return self._format_output(processed_results)
+        formatted_output = self._format_output(processed_results)
+        return self._get_response(request, formatted_output)
 
     def _process_prediction(self, formatted_data):
         try:
@@ -107,7 +131,7 @@ class ModelServing(Starlette):
             raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
         try:
             results = self.predict(pre_processed_input)
-        except BadDataFormatError as exc:
+        except PredictionError as exc:
             logger.warning(str(exc))
             raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
         try:
@@ -117,10 +141,25 @@ class ModelServing(Starlette):
             raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
         return processed_results
 
-    async def _input_format_endpoint(self, request: Request) -> JSONResponse:
+    async def _input_format_endpoint(
+        self, request: Request
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        return self._get_response(test_data)
+        return self._get_response(request, test_data)
+
+    def _get_response(
+        self, request: Request, data: Any
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
+        if any(
+            x in request.headers["accept"]
+            for x in (MediaTypes.HTML.value, MediaTypes.ANY_TEXT.value)
+        ):
+            return templates.TemplateResponse(
+                "input_format.html", {"request": request, "output_data": data}
+            )
+        else:
+            return self._get_json_response(data)
 
     @staticmethod
     def _validate_http_headers(
@@ -142,14 +181,13 @@ class ModelServing(Starlette):
             raise HTTPException(status_code=invalid_status_code, detail=err_msg)
 
     @staticmethod
-    def _get_response(data: Any) -> JSONResponse:
+    def _get_json_response(data: Any) -> JSONResponse:
         try:
             return JSONResponse(data)
-        except TypeError as exc:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Error trying to serialize response data to JSON: {exc}",
-            )
+        except (TypeError, ValueError):
+            err_msg = f"Error trying to serialize response data to JSON"
+            logger.exception(err_msg)
+            raise HTTPException(status_code=500, detail=err_msg)
 
     def pre_process_input(self, data: Any) -> Any:
         """Hook to enable pre-processing of input data"""
@@ -162,10 +200,10 @@ class ModelServing(Starlette):
     def _format_input(self, data: Any) -> Any:
         return data
 
-    def _format_output(self, results: Any) -> JSONResponse:
-        return self._get_response(results)
+    def _format_output(self, results: Any) -> Any:
+        return results
 
 
-_model_serving_runner = ModelServingRunner(ModelServing, [ModelServing])
+_model_serving_runner = ModelServingRunner(ModelServing, (ModelServing,))
 compose_models = _model_serving_runner.compose
 run_model_serving = _model_serving_runner.run_model_serving

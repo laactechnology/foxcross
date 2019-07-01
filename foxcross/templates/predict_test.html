@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="row">
+        <div class="col text-center">
+            <h1>{{ request.url.path }} Endpoint</h1>
+            <p class="text-info">This endpoint is used to document and see what type of
+                output the model gives on calling the predict endpoint.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p><b>Output results:</b> {{ output_data | pprint }}</p>
+        </div>
+    </div>
+{% endblock content %}

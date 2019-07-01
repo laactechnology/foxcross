@@ -1,23 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-</head>
-<body>
-<h1>Routes and HTTP Methods</h1>
-<ul>
-    <li><a href="/">Home</a></li>
-    {% for route in routes %}
-        <li>
-            <a href=".{{ route.path }}">{{ route.path }}</a>
+{% extends 'base.html' %}
+{% block content %}
+    <div class="row">
+        <div class="col text-center">
+            <h1>Welcome to your models served by
+                <a href="https://www.foxcross.dev">Foxcross</a>
+            </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
             <ul>
-                {% for method in route.methods %}
-                    <li>{{ method }}</li>
-                {% endfor %}
+                <li>Click <a href="https://www.foxcross.dev">here</a> to view the
+                    Foxcross <b>documentation</b></li>
+                <li>Click <a href="https://github.com/laactech/foxcross">here</a> to view
+                    the Foxcross <b>source code</b></li>
+                <li>Click <a href="https://github.com/laactech/foxcross/issues/new">here</a>
+                    to <b>report a bug</b></li>
+                <li>Click <a href="https://github.com/laactech/foxcross/blob/master/CONTRIBUTING.md">here</a>
+                    to see how to <b>contribute</b> to Foxcross</li>
             </ul>
-        </li>
-    {% endfor %}
-</ul>
-</body>
-</html>
+        </div>
+    </div>
+{% endblock content %}
