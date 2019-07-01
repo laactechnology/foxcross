@@ -1,3 +1,4 @@
+import decimal
 import os
 from pathlib import Path
 from typing import Any
@@ -12,14 +13,27 @@ from foxcross.serving import ModelServing
 
 from .test_serving import add_one_data_path
 
+__location__ = Path(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+)
 
-class NoTestDataDefined(ModelServing):
+bad_data_path = __location__ / "data/bad_data.json"
+
+
+class NoDataDefined(ModelServing):
     def predict(self, data: Any) -> Any:
         return 1
 
 
-class TestDataDoesNotExist(ModelServing):
+class DataDoesNotExist(ModelServing):
     test_data_path = "does_not_exist"
+
+    def predict(self, data: Any) -> Any:
+        return 1
+
+
+class BadInputData(ModelServing):
+    test_data_path = bad_data_path
 
     def predict(self, data: Any) -> Any:
         return 1
@@ -29,15 +43,29 @@ class PredictMethodNotDefined(ModelServing):
     test_data_path = add_one_data_path
 
 
+class BadResponseData(ModelServing):
+    test_data_path = add_one_data_path
+
+    def predict(self, data: Any) -> Any:
+        return decimal.Decimal(0)
+
+
 def test_no_test_data_path_defined():
     with pytest.raises(TestDataPathUndefinedError):
-        NoTestDataDefined()
+        NoDataDefined()
 
 
 def test_no_model_serving_found_error():
     runner = ModelServingRunner(
         ModelServing,
-        (ModelServing, NoTestDataDefined, TestDataDoesNotExist, PredictMethodNotDefined),
+        (
+            ModelServing,
+            NoDataDefined,
+            DataDoesNotExist,
+            PredictMethodNotDefined,
+            BadInputData,
+            BadResponseData,
+        ),
     )
     with pytest.raises(NoModelServingFoundError):
         runner.compose(__name__)
@@ -46,7 +74,14 @@ def test_no_model_serving_found_error():
 def test_module_not_found_error():
     runner = ModelServingRunner(
         ModelServing,
-        (ModelServing, NoTestDataDefined, TestDataDoesNotExist, PredictMethodNotDefined),
+        (
+            ModelServing,
+            NoDataDefined,
+            DataDoesNotExist,
+            PredictMethodNotDefined,
+            BadInputData,
+            BadResponseData,
+        ),
     )
     with pytest.raises(ModuleNotFoundError):
         runner.compose("this_does_not_exist")
@@ -54,7 +89,7 @@ def test_module_not_found_error():
 
 def test_test_data_does_not_exist():
     with pytest.raises(AssertionError):
-        TestDataDoesNotExist()
+        DataDoesNotExist()
 
 
 def test_predict_method_not_defined():
@@ -69,10 +104,24 @@ def test_predict_method_not_defined():
 def test_test_data_missing_from_disk(tmpdir):
     data_path = Path(tmpdir / "test_data.json")
     data_path.touch()
-    TestDataDoesNotExist.test_data_path = str(data_path)
-    app = TestDataDoesNotExist(debug=True)
+    DataDoesNotExist.test_data_path = str(data_path)
+    app = DataDoesNotExist(debug=True)
     os.remove(str(data_path))
     client = TestClient(app)
     response = client.get("/input-format/")
-    TestDataDoesNotExist.test_data_path = "does_not_exist"
+    DataDoesNotExist.test_data_path = "does_not_exist"
+    assert response.status_code == 500
+
+
+def test_bad_input_data():
+    app = BadInputData(debug=True)
+    client = TestClient(app)
+    response = client.get("/input-format/")
+    assert response.status_code == 500
+
+
+def test_bad_response_data():
+    app = BadResponseData(debug=True)
+    client = TestClient(app)
+    response = client.get("/predict-test/")
     assert response.status_code == 500

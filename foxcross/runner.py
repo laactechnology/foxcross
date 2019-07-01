@@ -3,7 +3,7 @@ import inspect
 import logging
 import re
 import sys
-from typing import Any, Tuple
+from typing import Any, Dict, Tuple
 
 import uvicorn
 from slugify import slugify
@@ -52,6 +52,15 @@ class ModelServingRunner:
             model_serving.add_route("/", _index_endpoint, methods=["GET"])
         return model_serving
 
-    def run_model_serving(self, module_name: str = "models", **kwargs):
-        asgi_app = self.compose(module_name, **kwargs)
-        uvicorn.run(asgi_app, **kwargs)
+    def run_model_serving(
+        self,
+        module_name: str = "models",
+        starlette_kwargs: Dict = None,
+        uvicorn_kwargs: Dict = None,
+    ):
+        if starlette_kwargs is None:
+            starlette_kwargs = {}
+        if uvicorn_kwargs is None:
+            uvicorn_kwargs = {}
+        asgi_app = self.compose(module_name, **starlette_kwargs)
+        uvicorn.run(asgi_app, **uvicorn_kwargs)

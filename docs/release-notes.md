@@ -6,6 +6,8 @@
 better urls
 * Added bootstrap 4 to improve model frontend
 * Created HTML output for all endpoints
+* Split `kwargs` into `starlette_kwargs` and `uvicorn_kwargs` in `run_model_serving` and
+`run_pandas_serving`
 
 ## 0.6.0
 * Added `PreProcessingError` for use with `pre_process_input`
