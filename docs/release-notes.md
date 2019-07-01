@@ -1,3 +1,6 @@
+## 0.7.1
+* Fixed serving the wrong template for `predict-test` endpoint
+
 ## 0.7.0
 * Improved exception handling
 * Added more logging
