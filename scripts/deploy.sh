@@ -11,6 +11,3 @@ if [[ $? -ne 0 ]]; then exit 1; fi
 
 # Publish to pypi
 poetry publish --build -u ${PYPI_USER} -p ${PYPI_PASS}
-
-# Publish new docs
-poetry run mkdocs gh-deploy
