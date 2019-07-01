@@ -201,6 +201,13 @@ Foxcross finds all classes inside your `models.py` file that subclass `ModelServ
 combines those into a single model serving. Foxcross uses the name of the class such as
 `AddOneModel` and `AddTwoModel` to define the routes where those models live.
 
+## Authentication
+
+Foxcross comes with no built in authentication, and we recommend running Foxcross models
+inside a trusted environment. Foxcross Serving Models are simply
+[Starlette](https://www.starlette.io/) applications, and Starlette comes with an
+[interface](https://www.starlette.io/authentication/) to achieve authentication.
+
 ## Running in Production
 
 Foxcross leverages [uvicorn](https://github.com/encode/uvicorn) to run model serving.
