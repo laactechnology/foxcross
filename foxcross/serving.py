@@ -91,13 +91,13 @@ class ModelServing(Starlette):
                 contents = await f.read()
         except FileNotFoundError as exc:
             err_msg = f"Error reading {self.test_data_path}: {exc}"
-            logger.error(err_msg)
+            logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
         try:
             return json.loads(contents.decode("utf-8"))
         except TypeError as exc:
             err_msg = f"Failed to load test data into JSON: {exc}"
-            logger.error(err_msg)
+            logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
 
     async def _predict_endpoint(
@@ -186,7 +186,7 @@ class ModelServing(Starlette):
             return JSONResponse(data)
         except TypeError as exc:
             err_msg = f"Error trying to serialize response data to JSON: {exc}"
-            logger.error(err_msg)
+            logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
 
     def pre_process_input(self, data: Any) -> Any:

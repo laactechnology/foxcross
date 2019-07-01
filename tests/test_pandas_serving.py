@@ -53,6 +53,15 @@ class PredictMethodNotDefined(DataFrameModelServing):
     test_data_path = interpolate_data_path
 
 
+class FormatOutputAttributeError(DataFrameModelServing):
+    test_data_path = interpolate_data_path
+
+    def predict(
+        self, data: Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]
+    ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
+        return {"hi": "there", "my": "friend"}
+
+
 class InterpolateModel:
     def __init__(self, direction: str):
         self._direction = direction
@@ -284,3 +293,10 @@ def test_multi_model_html_responses(endpoint):
         f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.HTML.value}
     )
     assert add_one_response.status_code == 200
+
+
+def test_format_output_attribute_error():
+    app = FormatOutputAttributeError(debug=True)
+    client = TestClient(app)
+    response = client.get("/predict-test/")
+    assert response.status_code == 500

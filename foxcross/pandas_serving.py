@@ -77,9 +77,9 @@ class DataFrameModelServing(ModelServing):
                     for key, value in results.items()
                 }
                 output["multi_dataframe"] = True
-            except AttributeError as exc:
+            except (TypeError, AttributeError) as exc:
                 err_msg = f"Failed to format prediction results: {exc}"
-                logger.error(err_msg)
+                logger.exception(err_msg)
                 raise HTTPException(status_code=500, detail=err_msg)
         return output
 
