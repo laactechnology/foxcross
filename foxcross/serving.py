@@ -121,7 +121,7 @@ class ModelServing(Starlette):
         formatted_data = self._format_input(test_data)
         processed_results = self._process_prediction(formatted_data)
         formatted_output = self._format_output(processed_results)
-        return self._get_response(request, formatted_output)
+        return self._get_response(request, formatted_output, "predict_test.html")
 
     def _process_prediction(self, formatted_data):
         try:
@@ -146,17 +146,17 @@ class ModelServing(Starlette):
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        return self._get_response(request, test_data)
+        return self._get_response(request, test_data, "input_format.html")
 
     def _get_response(
-        self, request: Request, data: Any
+        self, request: Request, data: Any, template: str
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         if any(
             x in request.headers["accept"]
             for x in (MediaTypes.HTML.value, MediaTypes.ANY_TEXT.value)
         ):
             return templates.TemplateResponse(
-                "input_format.html", {"request": request, "output_data": data}
+                template, {"request": request, "output_data": data}
             )
         else:
             return self._get_json_response(data)
