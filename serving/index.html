@@ -634,7 +634,7 @@
 
 
 <h2 id="serving-endpoints">Serving Endpoints</h2>
-<p>Subclassing any class that inherits from <code>ModelServing</code> gives you four endpoints:</p>
+<p>Subclassing <code>ModelServing</code> gives you four endpoints:</p>
 <ul>
 <li><code>/</code> (root endpoint)<ul>
 <li>Shows you the different endpoints and HTTP methods for your model</li>
@@ -829,7 +829,7 @@ combines those into a single model serving. Foxcross uses the name of the class 
 <code>AddOneModel</code> and <code>AddTwoModel</code> to define the routes where those models live.</p>
 <h2 id="authentication">Authentication</h2>
 <p>Foxcross comes with no built in authentication, and we recommend running Foxcross models
-inside a trusted environment. Foxcross Serving Models are simply
+inside a trusted environment. Foxcross serving models are simply
 <a href="https://www.starlette.io/">Starlette</a> applications, and Starlette comes with an
 <a href="https://www.starlette.io/authentication/">interface</a> to achieve authentication.</p>
 <h2 id="running-in-production">Running in Production</h2>
