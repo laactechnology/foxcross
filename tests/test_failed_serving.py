@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -35,7 +37,7 @@ def test_no_test_data_path_defined():
 def test_no_model_serving_found_error():
     runner = ModelServingRunner(
         ModelServing,
-        [ModelServing, NoTestDataDefined, TestDataDoesNotExist, PredictMethodNotDefined],
+        (ModelServing, NoTestDataDefined, TestDataDoesNotExist, PredictMethodNotDefined),
     )
     with pytest.raises(NoModelServingFoundError):
         runner.compose(__name__)
@@ -44,7 +46,7 @@ def test_no_model_serving_found_error():
 def test_module_not_found_error():
     runner = ModelServingRunner(
         ModelServing,
-        [ModelServing, NoTestDataDefined, TestDataDoesNotExist, PredictMethodNotDefined],
+        (ModelServing, NoTestDataDefined, TestDataDoesNotExist, PredictMethodNotDefined),
     )
     with pytest.raises(ModuleNotFoundError):
         runner.compose("this_does_not_exist")
@@ -62,3 +64,15 @@ def test_predict_method_not_defined():
         client.post("/predict/", headers={"Accept": MediaTypes.JSON.value}, json=1)
     with pytest.raises(NotImplementedError):
         client.get("/predict-test/", headers={"Accept": MediaTypes.JSON.value})
+
+
+def test_test_data_missing_from_disk(tmpdir):
+    data_path = Path(tmpdir / "test_data.json")
+    data_path.touch()
+    TestDataDoesNotExist.test_data_path = str(data_path)
+    app = TestDataDoesNotExist(debug=True)
+    os.remove(str(data_path))
+    client = TestClient(app)
+    response = client.get("/input-format/")
+    TestDataDoesNotExist.test_data_path = "does_not_exist"
+    assert response.status_code == 500

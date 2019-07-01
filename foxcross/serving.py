@@ -89,14 +89,14 @@ class ModelServing(Starlette):
         try:
             async with aiofiles.open(self.test_data_path, mode="rb") as f:
                 contents = await f.read()
-        except FileNotFoundError as exc:
-            err_msg = f"Error reading {self.test_data_path}: {exc}"
+        except FileNotFoundError:
+            err_msg = f"Error reading {self.test_data_path}"
             logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
         try:
             return json.loads(contents.decode("utf-8"))
-        except TypeError as exc:
-            err_msg = f"Failed to load test data into JSON: {exc}"
+        except TypeError:
+            err_msg = f"Failed to load test data into JSON"
             logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
 
@@ -184,8 +184,8 @@ class ModelServing(Starlette):
     def _get_json_response(data: Any) -> JSONResponse:
         try:
             return JSONResponse(data)
-        except TypeError as exc:
-            err_msg = f"Error trying to serialize response data to JSON: {exc}"
+        except TypeError:
+            err_msg = f"Error trying to serialize response data to JSON"
             logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
 
