@@ -204,7 +204,7 @@ combines those into a single model serving. Foxcross uses the name of the class 
 ## Authentication
 
 Foxcross comes with no built in authentication, and we recommend running Foxcross models
-inside a trusted environment. Foxcross Serving Models are simply
+inside a trusted environment. Foxcross serving models are simply
 [Starlette](https://www.starlette.io/) applications, and Starlette comes with an
 [interface](https://www.starlette.io/authentication/) to achieve authentication.
 
