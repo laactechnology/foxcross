@@ -89,15 +89,15 @@ class ModelServing(Starlette):
         try:
             async with aiofiles.open(self.test_data_path, mode="rb") as f:
                 contents = await f.read()
-        except FileNotFoundError as exc:
-            err_msg = f"Error reading {self.test_data_path}: {exc}"
-            logger.error(err_msg)
+        except FileNotFoundError:
+            err_msg = f"Error reading {self.test_data_path}"
+            logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
         try:
             return json.loads(contents.decode("utf-8"))
-        except TypeError as exc:
-            err_msg = f"Failed to load test data into JSON: {exc}"
-            logger.error(err_msg)
+        except (TypeError, ValueError):
+            err_msg = f"Failed to load test data into JSON"
+            logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
 
     async def _predict_endpoint(
@@ -121,7 +121,7 @@ class ModelServing(Starlette):
         formatted_data = self._format_input(test_data)
         processed_results = self._process_prediction(formatted_data)
         formatted_output = self._format_output(processed_results)
-        return self._get_response(request, formatted_output)
+        return self._get_response(request, formatted_output, "predict_test.html")
 
     def _process_prediction(self, formatted_data):
         try:
@@ -146,17 +146,17 @@ class ModelServing(Starlette):
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         self._validate_http_headers(request, "accept", self._media_types, 406)
         test_data = await self._read_test_data()
-        return self._get_response(request, test_data)
+        return self._get_response(request, test_data, "input_format.html")
 
     def _get_response(
-        self, request: Request, data: Any
+        self, request: Request, data: Any, template: str
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         if any(
             x in request.headers["accept"]
             for x in (MediaTypes.HTML.value, MediaTypes.ANY_TEXT.value)
         ):
             return templates.TemplateResponse(
-                "input_format.html", {"request": request, "output_data": data}
+                template, {"request": request, "output_data": data}
             )
         else:
             return self._get_json_response(data)
@@ -184,9 +184,9 @@ class ModelServing(Starlette):
     def _get_json_response(data: Any) -> JSONResponse:
         try:
             return JSONResponse(data)
-        except TypeError as exc:
-            err_msg = f"Error trying to serialize response data to JSON: {exc}"
-            logger.error(err_msg)
+        except (TypeError, ValueError):
+            err_msg = f"Error trying to serialize response data to JSON"
+            logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
 
     def pre_process_input(self, data: Any) -> Any:

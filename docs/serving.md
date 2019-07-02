@@ -29,7 +29,7 @@ class AddOneModel(ModelServing):
 ```
 
 ## Serving Endpoints
-Subclassing any class that inherits from `ModelServing` gives you four endpoints:
+Subclassing `ModelServing` gives you four endpoints:
 
 * `/` (root endpoint)
     * Shows you the different endpoints and HTTP methods for your model
@@ -200,6 +200,13 @@ both models come with the same set of endpoints and both perform predictions.
 Foxcross finds all classes inside your `models.py` file that subclass `ModelServing` and
 combines those into a single model serving. Foxcross uses the name of the class such as
 `AddOneModel` and `AddTwoModel` to define the routes where those models live.
+
+## Authentication
+
+Foxcross comes with no built in authentication, and we recommend running Foxcross models
+inside a trusted environment. Foxcross serving models are simply
+[Starlette](https://www.starlette.io/) applications, and Starlette comes with an
+[interface](https://www.starlette.io/authentication/) to achieve authentication.
 
 ## Running in Production
 
