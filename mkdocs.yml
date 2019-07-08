@@ -5,6 +5,9 @@ site_url: https://www.foxcross.dev
 
 theme:
   name: 'material'
+  palette:
+    primary: 'orange'
+    accent: 'blue'
 
 repo_name: laactech/foxcross
 repo_url: https://github.com/laactech/foxcross
