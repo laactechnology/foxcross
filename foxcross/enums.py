@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class MediaTypes(Enum):
+    FORM_URLENCODED = "application/x-www-form-urlencoded"
     JSON = "application/json"
     HTML = "text/html"
     ANY_TEXT = "text/*"

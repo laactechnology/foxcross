@@ -36,8 +36,11 @@ logger = logging.getLogger(__name__)
 class ModelServing(Starlette):
     test_data_path = None
     model_name = None
-    _media_types = set(MediaTypes.html_media_types() + MediaTypes.json_media_types())
+    _accept_media_types = set(
+        MediaTypes.html_media_types() + MediaTypes.json_media_types()
+    )
     _download_format_options = (MediaTypes.JSON,)
+    _content_types = MediaTypes.json_media_types() + (MediaTypes.FORM_DATA.value,)
 
     def __init__(
         self, redirect_https: bool = False, gzip_response: bool = True, **kwargs
@@ -107,20 +110,26 @@ class ModelServing(Starlette):
     async def _predict_endpoint(
         self, request: Request
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
-        self._validate_http_headers(request, "accept", self._media_types, 406)
+        self._validate_http_headers(request, "accept", self._accept_media_types, 406)
         if request.method == "GET":
             return templates.TemplateResponse("predict.html", {"request": request})
-        self._validate_http_headers(request, "content-type", self._media_types, 415)
-        json_data = await request.json()
-        formatted_data = self._format_input(json_data)
-        processed_results = self._process_prediction(formatted_data)
-        formatted_output = self._format_output(processed_results)
-        return self._get_json_response(formatted_output)
+        elif request.method == "POST":
+            self._validate_http_headers(request, "content-type", self._content_types, 415)
+            if MediaTypes.FORM_DATA.value in request.headers["content-type"]:
+                form_data = await request.form()
+                file_contents = await form_data["file_input"].read()
+                json_data = json.loads(file_contents)
+            else:
+                json_data = await request.json()
+            formatted_data = self._format_input(json_data)
+            processed_results = self._process_prediction(formatted_data)
+            formatted_output = self._format_output(processed_results)
+            return self._get_json_response(formatted_output)
 
     async def _predict_test_endpoint(
         self, request: Request
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
-        self._validate_http_headers(request, "accept", self._media_types, 406)
+        self._validate_http_headers(request, "accept", self._accept_media_types, 406)
         test_data = await self._read_test_data()
         formatted_data = self._format_input(test_data)
         processed_results = self._process_prediction(formatted_data)
@@ -203,7 +212,7 @@ class ModelServing(Starlette):
     async def _input_format_endpoint(
         self, request: Request
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
-        self._validate_http_headers(request, "accept", self._media_types, 406)
+        self._validate_http_headers(request, "accept", self._accept_media_types, 406)
         test_data = await self._read_test_data()
         return self._get_response(request, test_data, "input_format.html")
 

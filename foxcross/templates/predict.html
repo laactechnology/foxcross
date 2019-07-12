@@ -4,11 +4,24 @@
         <div class="col text-center">
             <h1>{{ request.url.path }} Endpoint</h1>
             <p class="text-info">
-                This endpoint is not usable with HTTP GET. You must POST data to this endpoint
-                to use it. To see what type of input this endpoint expects, navigate to
-                the input-format endpoint. To see what type of results you will get from this
-                endpoint, navigate to the predict-test endpoint.
+                You can use this endpoint by either POSTing data or uploading a file as
+                input. To see what type of input this endpoint expects, navigate to
+                the input-format endpoint. To see what type of results you will get from
+                this endpoint, navigate to the predict-test endpoint.
             </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form action="{{ request.url.path }}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="fileInput">Predict File Input*</label>
+                    <input type="file" class="form-control-file"
+                           id="fileInput" required>
+                </div>
+                <input type="submit" value="Submit"
+                           class="btn btn-primary btn-rounded">
+            </form>
         </div>
     </div>
 {% endblock content %}
