@@ -6,7 +6,7 @@
 ```python
 from foxcross.serving import run_model_serving
 
-run_model_serving(starlette_kwargs={"debug": True})
+run_model_serving(debug=True)
 ```
 or
 ```python
@@ -44,7 +44,7 @@ encrypted via HTTPS
 ```python
 from foxcross.serving import run_model_serving
 
-run_model_serving(starlette_kwargs={"redirect_https": True})
+run_model_serving(redirect_https=True)
 ```
 or
 ```python

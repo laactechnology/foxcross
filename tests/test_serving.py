@@ -190,6 +190,8 @@ def test_index_multi_model_serving():
     [
         ("/input-format/", add_one_data, add_five_data),
         ("/predict-test/", add_one_result_data, add_five_result_data),
+        ("/download-input-format/", add_one_data, add_five_data),
+        ("/download-predict-test/", add_one_result_data, add_five_result_data),
     ],
 )
 def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected):
@@ -225,13 +227,13 @@ def test_bad_data_format_error():
 def test_single_model_compose():
     runner = ModelServingRunner(
         ModelServing,
-        [
+        (
             ModelServing,
             AddFiveModel,
             PreProcessErrorModel,
             PostProcessErrorModel,
             StatusCodeOverrideModel,
-        ],
+        ),
     )
     app = runner.compose(__name__)
     client = TestClient(app)
@@ -256,7 +258,16 @@ def test_predict_get_request():
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "/predict/",
+        "/predict-test/",
+        "/input-format/",
+        "/download-input-format/",
+        "/download-predict-test/",
+    ],
+)
 def test_missing_accept_header(endpoint):
     app = AddOneModel(debug=True)
     client = TestClient(app)
@@ -296,7 +307,16 @@ def test_wrong_content_type_header():
     assert response.status_code == 415
 
 
-@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "/predict/",
+        "/predict-test/",
+        "/input-format/",
+        "/download-input-format/",
+        "/download-predict-test/",
+    ],
+)
 def test_wrong_accept_header(endpoint):
     app = AddOneModel(debug=True)
     client = TestClient(app)

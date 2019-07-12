@@ -1,7 +1,7 @@
 import logging
 import re
 from pathlib import Path
-from typing import Any, List, Union
+from typing import Any, Dict, List, Union
 
 import aiofiles
 from starlette.applications import Starlette
@@ -55,6 +55,14 @@ class ModelServing(Starlette):
         self.add_route("/predict/", self._predict_endpoint, methods=["GET", "POST"])
         self.add_route("/predict-test/", self._predict_test_endpoint, methods=["GET"])
         self.add_route("/input-format/", self._input_format_endpoint, methods=["GET"])
+        self.add_route(
+            "/download-input-format/", self._download_test_data_endpoint, methods=["GET"]
+        )
+        self.add_route(
+            "/download-predict-test/",
+            self._download_predict_test_endpoint,
+            methods=["GET"],
+        )
         if gzip_response is True:
             self.add_middleware(GZipMiddleware)
         if redirect_https is True:
@@ -65,6 +73,11 @@ class ModelServing(Starlette):
             MediaTypes.ANY_TEXT.value,
             MediaTypes.JSON.value,
             MediaTypes.HTML.value,
+        ]
+        self._download_media_types = [
+            MediaTypes.ANY.value,
+            MediaTypes.ANY_APP.value,
+            MediaTypes.JSON.value,
         ]
         if self.model_name is None:
             self.model_name = re.sub(
@@ -122,6 +135,29 @@ class ModelServing(Starlette):
         processed_results = self._process_prediction(formatted_data)
         formatted_output = self._format_output(processed_results)
         return self._get_response(request, formatted_output, "predict_test.html")
+
+    async def _download_test_data_endpoint(self, request: Request):
+        self._validate_http_headers(request, "accept", self._download_media_types, 406)
+        test_data = await self._read_test_data()
+        return self._get_json_response(
+            test_data,
+            extra_headers={
+                "Content-Disposition": "attachment; filename=input-format.json"
+            },
+        )
+
+    async def _download_predict_test_endpoint(self, request: Request):
+        self._validate_http_headers(request, "accept", self._download_media_types, 406)
+        test_data = await self._read_test_data()
+        formatted_data = self._format_input(test_data)
+        processed_results = self._process_prediction(formatted_data)
+        formatted_output = self._format_output(processed_results)
+        return self._get_json_response(
+            formatted_output,
+            extra_headers={
+                "Content-Disposition": "attachment; filename=predict-output.json"
+            },
+        )
 
     def _process_prediction(self, formatted_data):
         try:
@@ -181,9 +217,14 @@ class ModelServing(Starlette):
             raise HTTPException(status_code=invalid_status_code, detail=err_msg)
 
     @staticmethod
-    def _get_json_response(data: Any) -> JSONResponse:
+    def _get_json_response(
+        data: Any, extra_headers: Dict[str, str] = None
+    ) -> JSONResponse:
         try:
-            return JSONResponse(data)
+            if extra_headers:
+                return JSONResponse(data, headers=extra_headers)
+            else:
+                return JSONResponse(data)
         except (TypeError, ValueError):
             err_msg = f"Error trying to serialize response data to JSON"
             logger.exception(err_msg)

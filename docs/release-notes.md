@@ -1,3 +1,8 @@
+## 0.8.0
+* Added endpoints for downloading test prediction and input format
+* Removed `starlette_kwargs` and `uvicorn_kwargs` from `run_model_serving` and
+`run_pandas_serving`
+
 ## 0.7.1
 * Fixed serving the wrong template for `predict-test` endpoint
 
