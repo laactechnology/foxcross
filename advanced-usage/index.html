@@ -374,6 +374,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../contributing/" title="Contributing" class="md-nav__link">
+      Contributing
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="../release-notes/" title="Release Notes" class="md-nav__link">
       Release Notes
     </a>
@@ -479,7 +491,7 @@
 <p><strong>WARNING: this should not be enabled in production</strong></p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">foxcross.serving</span> <span class="kn">import</span> <span class="n">run_model_serving</span>
 
-<span class="n">run_model_serving</span><span class="p">(</span><span class="n">starlette_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">})</span>
+<span class="n">run_model_serving</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 
 
@@ -518,7 +530,7 @@ running the serving.</p>
 encrypted via HTTPS</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">foxcross.serving</span> <span class="kn">import</span> <span class="n">run_model_serving</span>
 
-<span class="n">run_model_serving</span><span class="p">(</span><span class="n">starlette_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;redirect_https&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">})</span>
+<span class="n">run_model_serving</span><span class="p">(</span><span class="n">redirect_https</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 
 

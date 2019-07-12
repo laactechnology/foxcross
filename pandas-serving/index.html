@@ -332,6 +332,26 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#changing-the-orient-of-pandas-output" title="Changing the orient of Pandas output" class="md-nav__link">
+    Changing the orient of Pandas output
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_2" title="Example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -363,6 +383,18 @@
   <li class="md-nav__item">
     <a href="../full-examples/" title="Full Examples" class="md-nav__link">
       Full Examples
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../contributing/" title="Contributing" class="md-nav__link">
+      Contributing
     </a>
   </li>
 
@@ -443,6 +475,26 @@
         
           <li class="md-nav__item">
   <a href="#example_1" title="Example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-the-orient-of-pandas-output" title="Changing the orient of Pandas output" class="md-nav__link">
+    Changing the orient of Pandas output
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_2" title="Example" class="md-nav__link">
     Example
   </a>
   
@@ -626,6 +678,23 @@ input data.</strong></p>
 
 <p>Navigate to <code>localhost:8000/</code> in your web browser, and you should see both the
 <code>/addonemodel</code> and the <code>/interpolatemodel</code>.</p>
+<h2 id="changing-the-orient-of-pandas-output">Changing the orient of Pandas output</h2>
+<p>Foxcross uses the Pandas <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_dict.html">to_dict</a>
+method before turning results into JSON. The <code>to_dict</code> method uses an <code>orient</code> argument to
+determine the output format. The default orient used by Foxcross is <code>index</code>, but
+this can be changed.</p>
+<h4 id="example_2">Example</h4>
+<p>models.py</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">foxcross.pandas_serving</span> <span class="kn">import</span> <span class="n">DataFrameModelServing</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
+
+<span class="k">class</span> <span class="nc">InterpolateModel</span><span class="p">(</span><span class="n">DataFrameModelServing</span><span class="p">):</span>
+    <span class="n">test_data_path</span> <span class="o">=</span> <span class="s2">&quot;data.json&quot;</span>
+    <span class="n">pandas_orient</span> <span class="o">=</span> <span class="s2">&quot;records&quot;</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">limit_direction</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+</pre></div>
                 
                   
                 

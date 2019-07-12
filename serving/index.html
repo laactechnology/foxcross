@@ -448,6 +448,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../contributing/" title="Contributing" class="md-nav__link">
+      Contributing
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="../release-notes/" title="Release Notes" class="md-nav__link">
       Release Notes
     </a>
@@ -628,7 +640,7 @@
 <ul>
 <li>create a class that inherits from <code>ModelServing</code></li>
 <li>define a <code>predict</code> method on the class that returns JSON serializable data</li>
-<li>supply test data by defining the class attribute <code>test_data_path</code></li>
+<li>supply <strong>JSON</strong> test data by defining the class attribute <code>test_data_path</code></li>
 </ul>
 <p>directory structure</p>
 <div class="codehilite"><pre><span></span>.
@@ -675,6 +687,14 @@ through a GET request</li>
 <li>Reads the <code>test_data_path</code> and returns the data through a GET request</li>
 <li>Allows you and your users to see what the model expects as input for the predict
 endpoint</li>
+</ul>
+</li>
+<li><code>/download-input-format/</code><ul>
+<li>Allows you and your users to download the output of <code>/input-format/</code></li>
+</ul>
+</li>
+<li><code>/download-predict-test/</code><ul>
+<li>Allows you and your users to download the output of <code>/predict-test/</code></li>
 </ul>
 </li>
 </ul>

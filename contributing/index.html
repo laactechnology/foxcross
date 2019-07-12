@@ -13,7 +13,7 @@
         <meta name="description" content="AsyncIO serving for data science models">
       
       
-        <link rel="canonical" href="https://www.foxcross.dev/full-examples/">
+        <link rel="canonical" href="https://www.foxcross.dev/contributing/">
       
       
         <meta name="author" content="LAAC Technology">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Full Examples - Foxcross</title>
+        <title>Contributing - Foxcross</title>
       
     
     
@@ -91,7 +91,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#full-examples" tabindex="1" class="md-skip">
+      <a href="#contributing-to-foxcross" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -117,7 +117,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Full Examples
+                Contributing
               
             </span>
           
@@ -274,6 +274,18 @@
       
       
 
+
+  <li class="md-nav__item">
+    <a href="../full-examples/" title="Full Examples" class="md-nav__link">
+      Full Examples
+    </a>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
@@ -284,58 +296,10 @@
       
     
     
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Full Examples
-      </label>
-    
-    <a href="./" title="Full Examples" class="md-nav__link md-nav__link--active">
-      Full Examples
-    </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#heroku-deployment" title="Heroku Deployment" class="md-nav__link">
-    Heroku Deployment
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#docker-example" title="Docker Example" class="md-nav__link">
-    Docker Example
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../contributing/" title="Contributing" class="md-nav__link">
+    <a href="./" title="Contributing" class="md-nav__link md-nav__link--active">
       Contributing
     </a>
+    
   </li>
 
     
@@ -368,29 +332,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#heroku-deployment" title="Heroku Deployment" class="md-nav__link">
-    Heroku Deployment
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#docker-example" title="Docker Example" class="md-nav__link">
-    Docker Example
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -401,21 +342,29 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/laactech/foxcross/edit/master/docs/full-examples.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/laactech/foxcross/edit/master/docs/contributing.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="full-examples">Full Examples</h1>
-<h2 id="heroku-deployment">Heroku Deployment</h2>
-<p>An example set of Foxcross models deployed on heroku.</p>
-<ul>
-<li><a href="https://foxcross-example.herokuapp.com/">Deployed application</a></li>
-<li><a href="https://github.com/laactech/foxcross-heroku-example">Source code</a></li>
+                <h1 id="contributing-to-foxcross">Contributing to Foxcross</h1>
+<p>To submit new code to the project you'll need to:</p>
+<ol>
+<li>Fork the repo</li>
+<li>Clone your fork on your local computer: <code>git clone https://github.com/&lt;username&gt;/foxcross.git</code></li>
+<li>Install <a href="https://github.com/sdispater/poetry#installation">poetry</a> for managing
+dependencies</li>
+<li>Install Foxcross locally: <code>poetry install</code></li>
+<li>Run the basic test suite: <code>pytest tests/test_serving.py tests/test_failed_serving.py tests/test_no_extra.py</code></li>
+<li>Install the linters: <code>pre-commit install</code></li>
+<li>Create a branch off of <code>develop</code> for your work: <ul>
+<li><code>git checkout develop</code></li>
+<li><code>git checkout -b &lt;branch-name&gt;</code></li>
 </ul>
-<h2 id="docker-example">Docker Example</h2>
-<p>An example set of Foxcross models inside a Docker container</p>
-<ul>
-<li><a href="https://github.com/laactech/foxcross-docker-example">Source code</a></li>
-</ul>
+</li>
+<li>Make your changes</li>
+<li>Add any tests or documentation necessary</li>
+<li>Push to your remote: <code>git push origin &lt;branch-name&gt;</code></li>
+<li><a href="https://github.com/laactech/foxcross/compare">Open a pull request</a></li>
+</ol>
                 
                   
                 
@@ -436,7 +385,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../advanced-usage/" title="Advanced Usage" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../full-examples/" title="Full Examples" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -445,19 +394,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Advanced Usage
+                Full Examples
               </span>
             </div>
           </a>
         
         
-          <a href="../contributing/" title="Contributing" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../release-notes/" title="Release Notes" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Contributing
+                Release Notes
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
