@@ -136,7 +136,7 @@ class ModelServing(Starlette):
         formatted_output = self._format_output(processed_results)
         return self._get_response(request, formatted_output, "predict_test.html")
 
-    async def _download_test_data_endpoint(self, request: Request):
+    async def _download_test_data_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._download_media_types, 406)
         test_data = await self._read_test_data()
         return self._get_json_response(
@@ -146,7 +146,7 @@ class ModelServing(Starlette):
             },
         )
 
-    async def _download_predict_test_endpoint(self, request: Request):
+    async def _download_predict_test_endpoint(self, request: Request) -> JSONResponse:
         self._validate_http_headers(request, "accept", self._download_media_types, 406)
         test_data = await self._read_test_data()
         formatted_data = self._format_input(test_data)
