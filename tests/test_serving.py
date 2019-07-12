@@ -200,18 +200,28 @@ def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected
     add_one_slugified = slugify(
         re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
     )
-    add_one_response = client.get(
-        f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
-    )
+    if "download" in endpoint:
+        add_one_response = client.post(
+            f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
+        )
+    else:
+        add_one_response = client.get(
+            f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
+        )
     assert add_one_response.status_code == 200
     assert add_one_response.json() == first_expected
 
     add_five_slugified = slugify(
         re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddFiveModel.__name__)
     )
-    add_five_response = client.get(
-        f"{add_five_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
-    )
+    if "download" in endpoint:
+        add_five_response = client.post(
+            f"{add_five_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
+        )
+    else:
+        add_five_response = client.get(
+            f"{add_five_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
+        )
     assert add_five_response.status_code == 200
     assert add_five_response.json() == second_expected
 
@@ -351,7 +361,16 @@ def test_override_status_code_exception():
     assert response.status_code == 420
 
 
-@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "/predict/",
+        "/predict-test/",
+        "/input-format/",
+        "/download-input-format/",
+        "/download-predict-test/",
+    ],
+)
 def test_single_model_html_responses(endpoint):
     app = AddOneModel(debug=True)
     client = TestClient(app)
@@ -359,7 +378,16 @@ def test_single_model_html_responses(endpoint):
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize("endpoint", ["/predict/", "/predict-test/", "/input-format/"])
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "/predict/",
+        "/predict-test/",
+        "/input-format/",
+        "/download-input-format/",
+        "/download-predict-test/",
+    ],
+)
 def test_multi_model_html_responses(endpoint):
     app = compose_models(__name__, debug=True)
     client = TestClient(app)
