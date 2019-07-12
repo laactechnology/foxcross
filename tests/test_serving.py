@@ -246,7 +246,7 @@ def test_https_redirect():
     app = AddOneModel(redirect_https=True)
     client = TestClient(app)
     add_one_response = client.get("/", allow_redirects=False)
-    assert add_one_response.status_code == 301
+    assert add_one_response.status_code == 308
 
 
 def test_predict_get_request():
