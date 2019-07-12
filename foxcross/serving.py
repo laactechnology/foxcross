@@ -1,7 +1,7 @@
 import logging
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Iterable, Union
 
 import aiofiles
 from starlette.applications import Starlette
@@ -30,13 +30,14 @@ except ImportError:
     import json
     from starlette.responses import JSONResponse
 
-
 logger = logging.getLogger(__name__)
 
 
 class ModelServing(Starlette):
     test_data_path = None
     model_name = None
+    _media_types = set(MediaTypes.html_media_types() + MediaTypes.json_media_types())
+    _download_format_options = (MediaTypes.JSON,)
 
     def __init__(
         self, redirect_https: bool = False, gzip_response: bool = True, **kwargs
@@ -56,29 +57,19 @@ class ModelServing(Starlette):
         self.add_route("/predict-test/", self._predict_test_endpoint, methods=["GET"])
         self.add_route("/input-format/", self._input_format_endpoint, methods=["GET"])
         self.add_route(
-            "/download-input-format/", self._download_test_data_endpoint, methods=["GET"]
+            "/download-input-format/",
+            self._download_input_format_endpoint,
+            methods=["GET", "POST"],
         )
         self.add_route(
             "/download-predict-test/",
             self._download_predict_test_endpoint,
-            methods=["GET"],
+            methods=["GET", "POST"],
         )
         if gzip_response is True:
             self.add_middleware(GZipMiddleware)
         if redirect_https is True:
             self.add_middleware(HTTPSRedirectMiddleware)
-        self._media_types = [
-            MediaTypes.ANY.value,
-            MediaTypes.ANY_APP.value,
-            MediaTypes.ANY_TEXT.value,
-            MediaTypes.JSON.value,
-            MediaTypes.HTML.value,
-        ]
-        self._download_media_types = [
-            MediaTypes.ANY.value,
-            MediaTypes.ANY_APP.value,
-            MediaTypes.JSON.value,
-        ]
         if self.model_name is None:
             self.model_name = re.sub(
                 SLUGIFY_REGEX, SLUGIFY_REPLACE, self.__class__.__name__
@@ -136,28 +127,60 @@ class ModelServing(Starlette):
         formatted_output = self._format_output(processed_results)
         return self._get_response(request, formatted_output, "predict_test.html")
 
-    async def _download_test_data_endpoint(self, request: Request) -> JSONResponse:
-        self._validate_http_headers(request, "accept", self._download_media_types, 406)
-        test_data = await self._read_test_data()
-        return self._get_json_response(
-            test_data,
-            extra_headers={
-                "Content-Disposition": "attachment; filename=input-format.json"
-            },
-        )
+    async def _download_input_format_endpoint(
+        self, request: Request
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
+        if request.method == "GET":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.html_media_types(), 406
+            )
+            return templates.TemplateResponse(
+                "download_input_format.html",
+                {
+                    "request": request,
+                    "data_format_options": self._download_format_options,
+                },
+            )
+        elif request.method == "POST":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.json_media_types(), 406
+            )
+            test_data = await self._read_test_data()
+            return self._get_json_response(
+                test_data,
+                extra_headers={
+                    "Content-Disposition": "attachment; filename=input-format.json"
+                },
+            )
 
-    async def _download_predict_test_endpoint(self, request: Request) -> JSONResponse:
-        self._validate_http_headers(request, "accept", self._download_media_types, 406)
-        test_data = await self._read_test_data()
-        formatted_data = self._format_input(test_data)
-        processed_results = self._process_prediction(formatted_data)
-        formatted_output = self._format_output(processed_results)
-        return self._get_json_response(
-            formatted_output,
-            extra_headers={
-                "Content-Disposition": "attachment; filename=predict-output.json"
-            },
-        )
+    async def _download_predict_test_endpoint(
+        self, request: Request
+    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
+        if request.method == "GET":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.html_media_types(), 406
+            )
+            return templates.TemplateResponse(
+                "download_predict_test.html",
+                {
+                    "request": request,
+                    "data_format_options": self._download_format_options,
+                },
+            )
+        elif request.method == "POST":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.json_media_types(), 406
+            )
+            test_data = await self._read_test_data()
+            formatted_data = self._format_input(test_data)
+            processed_results = self._process_prediction(formatted_data)
+            formatted_output = self._format_output(processed_results)
+            return self._get_json_response(
+                formatted_output,
+                extra_headers={
+                    "Content-Disposition": "attachment; filename=predict-output.json"
+                },
+            )
 
     def _process_prediction(self, formatted_data):
         try:
@@ -199,7 +222,10 @@ class ModelServing(Starlette):
 
     @staticmethod
     def _validate_http_headers(
-        request: Request, header: str, media_types: List[str], invalid_status_code: int
+        request: Request,
+        header: str,
+        media_types: Iterable[str],
+        invalid_status_code: int,
     ):
         if not request.headers.get(header):
             err_msg = (
