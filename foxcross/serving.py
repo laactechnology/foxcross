@@ -36,7 +36,6 @@ logger = logging.getLogger(__name__)
 class ModelServing(Starlette):
     test_data_path = None
     model_name = None
-    _media_types = set(MediaTypes.html_media_types() + MediaTypes.json_media_types())
     _download_format_options = (MediaTypes.JSON,)
 
     def __init__(
@@ -54,17 +53,11 @@ class ModelServing(Starlette):
         self.load_model()
         self.add_route("/", _index_endpoint, methods=["GET"])
         self.add_route("/predict/", self._predict_endpoint, methods=["GET", "POST"])
-        self.add_route("/predict-test/", self._predict_test_endpoint, methods=["GET"])
-        self.add_route("/input-format/", self._input_format_endpoint, methods=["GET"])
         self.add_route(
-            "/download-input-format/",
-            self._download_input_format_endpoint,
-            methods=["GET", "POST"],
+            "/predict-test/", self._predict_test_endpoint, methods=["GET", "POST"]
         )
         self.add_route(
-            "/download-predict-test/",
-            self._download_predict_test_endpoint,
-            methods=["GET", "POST"],
+            "/input-format/", self._input_format_endpoint, methods=["GET", "POST"]
         )
         if gzip_response is True:
             self.add_middleware(GZipMiddleware)
@@ -107,74 +100,49 @@ class ModelServing(Starlette):
     async def _predict_endpoint(
         self, request: Request
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
-        self._validate_http_headers(request, "accept", self._media_types, 406)
         if request.method == "GET":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.html_media_types(), 406
+            )
             return templates.TemplateResponse("predict.html", {"request": request})
-        self._validate_http_headers(request, "content-type", self._media_types, 415)
-        json_data = await request.json()
-        formatted_data = self._format_input(json_data)
-        processed_results = self._process_prediction(formatted_data)
-        formatted_output = self._format_output(processed_results)
-        return self._get_json_response(formatted_output)
+        elif request.method == "POST":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.json_media_types(), 406
+            )
+            self._validate_http_headers(
+                request, "content-type", MediaTypes.json_media_types(), 415
+            )
+            json_data = await request.json()
+            formatted_data = self._format_input(json_data)
+            processed_results = self._process_prediction(formatted_data)
+            formatted_output = self._format_output(processed_results)
+            return self._get_json_response(formatted_output)
 
     async def _predict_test_endpoint(
         self, request: Request
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
-        self._validate_http_headers(request, "accept", self._media_types, 406)
+        if request.method == "GET":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.html_media_types(), 406
+            )
+        elif request.method == "POST":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.json_media_types(), 406
+            )
         test_data = await self._read_test_data()
         formatted_data = self._format_input(test_data)
         processed_results = self._process_prediction(formatted_data)
         formatted_output = self._format_output(processed_results)
-        return self._get_response(request, formatted_output, "predict_test.html")
-
-    async def _download_input_format_endpoint(
-        self, request: Request
-    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
         if request.method == "GET":
-            self._validate_http_headers(
-                request, "accept", MediaTypes.html_media_types(), 406
-            )
             return templates.TemplateResponse(
-                "download_input_format.html",
+                "predict_test.html",
                 {
                     "request": request,
                     "data_format_options": self._download_format_options,
+                    "output_data": formatted_output,
                 },
             )
         elif request.method == "POST":
-            self._validate_http_headers(
-                request, "accept", MediaTypes.json_media_types(), 406
-            )
-            test_data = await self._read_test_data()
-            return self._get_json_response(
-                test_data,
-                extra_headers={
-                    "Content-Disposition": "attachment; filename=input-format.json"
-                },
-            )
-
-    async def _download_predict_test_endpoint(
-        self, request: Request
-    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
-        if request.method == "GET":
-            self._validate_http_headers(
-                request, "accept", MediaTypes.html_media_types(), 406
-            )
-            return templates.TemplateResponse(
-                "download_predict_test.html",
-                {
-                    "request": request,
-                    "data_format_options": self._download_format_options,
-                },
-            )
-        elif request.method == "POST":
-            self._validate_http_headers(
-                request, "accept", MediaTypes.json_media_types(), 406
-            )
-            test_data = await self._read_test_data()
-            formatted_data = self._format_input(test_data)
-            processed_results = self._process_prediction(formatted_data)
-            formatted_output = self._format_output(processed_results)
             return self._get_json_response(
                 formatted_output,
                 extra_headers={
@@ -203,22 +171,31 @@ class ModelServing(Starlette):
     async def _input_format_endpoint(
         self, request: Request
     ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
-        self._validate_http_headers(request, "accept", self._media_types, 406)
-        test_data = await self._read_test_data()
-        return self._get_response(request, test_data, "input_format.html")
-
-    def _get_response(
-        self, request: Request, data: Any, template: str
-    ) -> Union[JSONResponse, Jinja2Templates.TemplateResponse]:
-        if any(
-            x in request.headers["accept"]
-            for x in (MediaTypes.HTML.value, MediaTypes.ANY_TEXT.value)
-        ):
-            return templates.TemplateResponse(
-                template, {"request": request, "output_data": data}
+        if request.method == "GET":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.html_media_types(), 406
             )
-        else:
-            return self._get_json_response(data)
+        elif request.method == "POST":
+            self._validate_http_headers(
+                request, "accept", MediaTypes.json_media_types(), 406
+            )
+        test_data = await self._read_test_data()
+        if request.method == "GET":
+            return templates.TemplateResponse(
+                "input_format.html",
+                {
+                    "request": request,
+                    "data_format_options": self._download_format_options,
+                    "output_data": test_data,
+                },
+            )
+        elif request.method == "POST":
+            return self._get_json_response(
+                test_data,
+                extra_headers={
+                    "Content-Disposition": "attachment; filename=input-format.json"
+                },
+            )
 
     @staticmethod
     def _validate_http_headers(

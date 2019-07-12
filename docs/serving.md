@@ -44,10 +44,6 @@ Subclassing `ModelServing` gives you four endpoints:
     * Reads the `test_data_path` and returns the data through a GET request
     * Allows you and your users to see what the model expects as input for the predict
     endpoint
-* `/download-input-format/`
-    * Allows you and your users to download the output of `/input-format/`
-* `/download-predict-test/`
-    * Allows you and your users to download the output of `/predict-test/`
 
 ## Serving Hooks
 

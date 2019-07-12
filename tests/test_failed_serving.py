@@ -88,7 +88,7 @@ def test_predict_method_not_defined():
     with pytest.raises(NotImplementedError):
         client.post("/predict/", headers={"Accept": MediaTypes.JSON.value}, json=1)
     with pytest.raises(NotImplementedError):
-        client.get("/predict-test/", headers={"Accept": MediaTypes.JSON.value})
+        client.post("/predict-test/", headers={"Accept": MediaTypes.JSON.value})
 
 
 def test_test_data_missing_from_disk(tmpdir):

@@ -4,12 +4,19 @@
         <div class="col text-center">
             <h1>{{ request.url.path }} Endpoint</h1>
             <p class="text-info">This endpoint is used to document and see what type of
-            input the model expects.</p>
+                input the model expects. To download the data, submit the form
+                or POST to this endpoint</p>
         </div>
     </div>
     <div class="row">
         <div class="col">
             <p><b>Input data:</b> {{ output_data | pprint }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4>Download Input Format Data</h4>
+            {% include 'data_format_form.html' %}
         </div>
     </div>
 {% endblock content %}

@@ -1,5 +1,5 @@
 ## 0.8.0
-* Added endpoints for downloading test prediction and input format
+* Added download form for `input-format` and `predict-test` endpoints
 * Removed `starlette_kwargs` and `uvicorn_kwargs` from `run_model_serving` and
 `run_pandas_serving`
 
