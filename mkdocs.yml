@@ -5,6 +5,9 @@ site_url: https://www.foxcross.dev
 
 theme:
   name: 'material'
+  palette:
+    primary: 'orange'
+    accent: 'blue'
 
 repo_name: laactech/foxcross
 repo_url: https://github.com/laactech/foxcross
@@ -14,6 +17,8 @@ nav:
   - Serving: serving.md
   - Pandas Serving: pandas-serving.md
   - Advanced Usage: advanced-usage.md
+  - Full Examples: full-examples.md
+  - Contributing: contributing.md
   - Release Notes: release-notes.md
 
 markdown_extensions:

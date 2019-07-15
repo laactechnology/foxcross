@@ -5,7 +5,7 @@ To serve a data science model with Foxcross, you must do three things:
 
 * create a class that inherits from `ModelServing`
 * define a `predict` method on the class that returns JSON serializable data
-* supply test data by defining the class attribute `test_data_path`
+* supply **JSON** test data by defining the class attribute `test_data_path`
 
 directory structure
 ```

@@ -1,0 +1,12 @@
+<form action="{{ request.url.path }}" method="post">
+    <div class="form-group">
+        <label for="dataFormat">Data Format</label>
+        <select class="form-control" id="dataFormat">
+            {% for opt in data_format_options %}
+                <option value="{{ opt.value }}">{{ opt.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Submit"
+               class="btn btn-primary btn-rounded">
+    </div>
+</form>

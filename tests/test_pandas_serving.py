@@ -128,12 +128,9 @@ class InterpolateMultiFrameModelServing(DataFrameModelServing):
 def test_endpoints_single_model_serving(model_serving, input_data, expected, endpoint):
     app = model_serving(debug=True)
     client = TestClient(app)
-    if endpoint == "/predict/":
-        response = client.post(
-            endpoint, headers={"Accept": MediaTypes.JSON.value}, json=input_data
-        )
-    else:
-        response = client.get(endpoint, headers={"Accept": MediaTypes.JSON.value})
+    response = client.post(
+        endpoint, headers={"Accept": MediaTypes.JSON.value}, json=input_data
+    )
     assert response.status_code == 200
     assert response.json() == expected
 
@@ -212,7 +209,7 @@ def test_endpoints_multi_model_serving(
     interp_slugified = slugify(
         re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateModelServing.__name__)
     )
-    response = client.get(
+    response = client.post(
         f"{interp_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert response.status_code == 200
@@ -221,7 +218,7 @@ def test_endpoints_multi_model_serving(
     multi_slugified = slugify(
         re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, InterpolateMultiFrameModelServing.__name__)
     )
-    multi_response = client.get(
+    multi_response = client.post(
         f"{multi_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert multi_response.status_code == 200
@@ -230,7 +227,7 @@ def test_endpoints_multi_model_serving(
     add_one_slugified = slugify(
         re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
     )
-    add_one_response = client.get(
+    add_one_response = client.post(
         f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert add_one_response.status_code == 200
@@ -245,7 +242,7 @@ def test_predict_method_not_defined():
             "/predict/", headers={"Accept": MediaTypes.JSON.value}, json=interpolate_data
         )
     with pytest.raises(NotImplementedError):
-        client.get("/predict-test/", headers={"Accept": MediaTypes.JSON.value})
+        client.post("/predict-test/", headers={"Accept": MediaTypes.JSON.value})
 
 
 def test_predict_input_issue():

@@ -155,3 +155,25 @@ python models.py
 
 Navigate to `localhost:8000/` in your web browser, and you should see both the
 `/addonemodel` and the `/interpolatemodel`.
+
+
+## Changing the orient of Pandas output
+
+Foxcross uses the Pandas [to_dict](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_dict.html)
+method before turning results into JSON. The `to_dict` method uses an `orient` argument to
+determine the output format. The default orient used by Foxcross is `index`, but
+this can be changed.
+
+#### Example
+models.py
+```python
+from foxcross.pandas_serving import DataFrameModelServing
+import pandas
+
+class InterpolateModel(DataFrameModelServing):
+    test_data_path = "data.json"
+    pandas_orient = "records"
+
+    def predict(self, data: pandas.DataFrame) -> pandas.DataFrame:
+        return data.interpolate(limit_direction="both")
+```

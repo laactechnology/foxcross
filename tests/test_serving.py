@@ -121,12 +121,9 @@ class AddFiveModel(ModelServing):
 def test_endpoints_single_model_serving(model_serving, input_data, expected, endpoint):
     app = model_serving(debug=True)
     client = TestClient(app)
-    if endpoint == "/predict/":
-        response = client.post(
-            endpoint, headers={"Accept": MediaTypes.JSON.value}, json=input_data
-        )
-    else:
-        response = client.get(endpoint, headers={"Accept": MediaTypes.JSON.value})
+    response = client.post(
+        endpoint, headers={"Accept": MediaTypes.JSON.value}, json=input_data
+    )
     assert response.status_code == 200
     assert response.json() == expected
 
@@ -198,7 +195,7 @@ def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected
     add_one_slugified = slugify(
         re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddOneModel.__name__)
     )
-    add_one_response = client.get(
+    add_one_response = client.post(
         f"{add_one_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert add_one_response.status_code == 200
@@ -207,7 +204,7 @@ def test_endpoints_multi_model_serving(endpoint, first_expected, second_expected
     add_five_slugified = slugify(
         re.sub(SLUGIFY_REGEX, SLUGIFY_REPLACE, AddFiveModel.__name__)
     )
-    add_five_response = client.get(
+    add_five_response = client.post(
         f"{add_five_slugified}{endpoint}", headers={"Accept": MediaTypes.JSON.value}
     )
     assert add_five_response.status_code == 200
@@ -225,13 +222,13 @@ def test_bad_data_format_error():
 def test_single_model_compose():
     runner = ModelServingRunner(
         ModelServing,
-        [
+        (
             ModelServing,
             AddFiveModel,
             PreProcessErrorModel,
             PostProcessErrorModel,
             StatusCodeOverrideModel,
-        ],
+        ),
     )
     app = runner.compose(__name__)
     client = TestClient(app)
@@ -246,7 +243,7 @@ def test_https_redirect():
     app = AddOneModel(redirect_https=True)
     client = TestClient(app)
     add_one_response = client.get("/", allow_redirects=False)
-    assert add_one_response.status_code == 301
+    assert add_one_response.status_code == 308
 
 
 def test_predict_get_request():

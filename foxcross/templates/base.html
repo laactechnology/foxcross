@@ -46,7 +46,7 @@
                         {% if obj.path != "/" %}
                             <li class="nav-item">
                                 <a class="nav-link"
-                                   href=".{{ obj.path }}">{{ obj.path | replace("/", "") }}</a>
+                                   href="{{ obj.path }}">{{ obj.path | replace("/", "") }}</a>
                             </li>
                         {% endif %}
                     {% endif %}

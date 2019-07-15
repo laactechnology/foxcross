@@ -4,12 +4,19 @@
         <div class="col text-center">
             <h1>{{ request.url.path }} Endpoint</h1>
             <p class="text-info">This endpoint is used to document and see what type of
-                output the model gives on calling the predict endpoint.</p>
+                output the model gives on calling the predict endpoint. To download the
+                data, submit the form or POST to this endpoint</p>
         </div>
     </div>
     <div class="row">
         <div class="col">
             <p><b>Output results:</b> {{ output_data | pprint }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4>Download Predict Test Data</h4>
+            {% include 'data_format_form.html' %}
         </div>
     </div>
 {% endblock content %}

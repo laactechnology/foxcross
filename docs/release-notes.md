@@ -1,3 +1,11 @@
+## 0.8.0
+* Added download form for `input-format` and `predict-test` endpoints
+* Changed HTTP GET on `input-format` and `predict-test` to only return HTML
+* Added HTTP POST on `input-format` and `predict-test` which will return JSON
+* Removed `starlette_kwargs` and `uvicorn_kwargs` from `run_model_serving` and
+`run_pandas_serving`
+* Fixed bug with navbar paths for single model serving
+
 ## 0.7.1
 * Fixed serving the wrong template for `predict-test` endpoint
 
