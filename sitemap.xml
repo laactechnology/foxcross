@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://www.foxcross.dev/</loc>
-     <lastmod>2019-07-12</lastmod>
+     <lastmod>2019-07-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://www.foxcross.dev/serving/</loc>
-     <lastmod>2019-07-12</lastmod>
+     <lastmod>2019-07-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://www.foxcross.dev/pandas-serving/</loc>
-     <lastmod>2019-07-12</lastmod>
+     <lastmod>2019-07-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://www.foxcross.dev/advanced-usage/</loc>
-     <lastmod>2019-07-12</lastmod>
+     <lastmod>2019-07-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://www.foxcross.dev/full-examples/</loc>
-     <lastmod>2019-07-12</lastmod>
+     <lastmod>2019-07-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://www.foxcross.dev/contributing/</loc>
-     <lastmod>2019-07-12</lastmod>
+     <lastmod>2019-07-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://www.foxcross.dev/release-notes/</loc>
-     <lastmod>2019-07-12</lastmod>
+     <lastmod>2019-07-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>

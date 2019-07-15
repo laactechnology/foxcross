@@ -500,9 +500,12 @@
                 
                 <h2 id="080">0.8.0</h2>
 <ul>
-<li>Added endpoints for downloading test prediction and input format</li>
+<li>Added download form for <code>input-format</code> and <code>predict-test</code> endpoints</li>
+<li>Changed HTTP GET on <code>input-format</code> and <code>predict-test</code> to only return HTML</li>
+<li>Added HTTP POST on <code>input-format</code> and <code>predict-test</code> which will return JSON</li>
 <li>Removed <code>starlette_kwargs</code> and <code>uvicorn_kwargs</code> from <code>run_model_serving</code> and
 <code>run_pandas_serving</code></li>
+<li>Fixed bug with navbar paths for single model serving</li>
 </ul>
 <h2 id="071">0.7.1</h2>
 <ul>
