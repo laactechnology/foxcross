@@ -1,3 +1,6 @@
+## Next Release
+* Added debug logging
+
 ## 0.8.0
 * Added download form for `input-format` and `predict-test` endpoints
 * Changed HTTP GET on `input-format` and `predict-test` to only return HTML

@@ -25,9 +25,10 @@ class ModelServingRunner:
     def compose(self, module_name: str = "models", **kwargs) -> ASGIApp:
         try:
             python_module = importlib.import_module(module_name)
+            logger.debug(f"Found python module {python_module} for model serving")
         except ModuleNotFoundError as exc:
             err_msg = f"Cannot find Python module named {module_name}: {exc}"
-            logger.critical(err_msg)
+            logger.exception(err_msg)
             raise ModuleNotFoundError(err_msg)
         class_members = inspect.getmembers(sys.modules[module_name], inspect.isclass)
         serving_models = [
@@ -37,11 +38,12 @@ class ModelServingRunner:
             and class_ not in self._excluded_classes
         ]
         if not serving_models:
-            raise NoModelServingFoundError(
-                f"Could not find any model serving in {python_module}"
-            )
+            err_msg = f"Could not find any model serving in {python_module}"
+            logger.error(err_msg)
+            raise NoModelServingFoundError(err_msg)
         elif len(serving_models) == 1:
             model_serving = serving_models[0](**kwargs)
+            logger.debug(f"Initialized single model serving for {serving_models[0]}")
         else:
             model_serving = Starlette(**kwargs)
             for asgi_app in serving_models:
@@ -50,6 +52,7 @@ class ModelServingRunner:
                 )
                 model_serving.mount(f"/{slugified_app_name}", asgi_app(**kwargs))
             model_serving.add_route("/", _index_endpoint, methods=["GET"])
+            logger.debug(f"Initialized multiple model serving for {serving_models}")
         return model_serving
 
     def run_model_serving(self, module_name: str = "models", **kwargs):

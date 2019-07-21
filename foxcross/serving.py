@@ -51,6 +51,7 @@ class ModelServing(Starlette):
         assert test_data.exists(), f"{self.test_data_path} does not exist"
         super().__init__(**kwargs)
         self.load_model()
+        logger.debug("load_model completed")
         self.add_route("/", _index_endpoint, methods=["GET"])
         self.add_route("/predict/", self._predict_endpoint, methods=["GET", "POST"])
         self.add_route(
@@ -61,8 +62,10 @@ class ModelServing(Starlette):
         )
         if gzip_response is True:
             self.add_middleware(GZipMiddleware)
+            logger.debug("GZIPMiddleware added")
         if redirect_https is True:
             self.add_middleware(HTTPSRedirectMiddleware)
+            logger.debug("HTTPSRedirectMiddleware added")
         if self.model_name is None:
             self.model_name = re.sub(
                 SLUGIFY_REGEX, SLUGIFY_REPLACE, self.__class__.__name__
@@ -86,6 +89,7 @@ class ModelServing(Starlette):
         try:
             async with aiofiles.open(self.test_data_path, mode="rb") as f:
                 contents = await f.read()
+            logger.debug(f"Test data read from {self.test_data_path}")
         except FileNotFoundError:
             err_msg = f"Error reading {self.test_data_path}"
             logger.exception(err_msg)
@@ -113,9 +117,13 @@ class ModelServing(Starlette):
                 request, "content-type", MediaTypes.json_media_types(), 415
             )
             json_data = await request.json()
+            logger.debug("Received POST data for prediction")
             formatted_data = self._format_input(json_data)
+            logger.debug("Formatted POST input data for prediction")
             processed_results = self._process_prediction(formatted_data)
+            logger.debug("Completed prediction process")
             formatted_output = self._format_output(processed_results)
+            logger.debug("Formatted prediction results")
             return self._get_json_response(formatted_output)
 
     async def _predict_test_endpoint(
@@ -131,8 +139,11 @@ class ModelServing(Starlette):
             )
         test_data = await self._read_test_data()
         formatted_data = self._format_input(test_data)
+        logger.debug("Formatted test data")
         processed_results = self._process_prediction(formatted_data)
+        logger.debug("Completed prediction test process")
         formatted_output = self._format_output(processed_results)
+        logger.debug("Formatted prediction test results")
         if request.method == "GET":
             return templates.TemplateResponse(
                 "predict_test.html",
@@ -153,16 +164,19 @@ class ModelServing(Starlette):
     def _process_prediction(self, formatted_data):
         try:
             pre_processed_input = self.pre_process_input(formatted_data)
+            logger.debug("Pre-processed data")
         except PreProcessingError as exc:
             logger.warning(str(exc))
             raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
         try:
             results = self.predict(pre_processed_input)
+            logger.debug("Performed prediction")
         except PredictionError as exc:
             logger.warning(str(exc))
             raise HTTPException(status_code=exc.http_status_code, detail=str(exc))
         try:
             processed_results = self.post_process_results(results)
+            logger.debug("Post-processed prediction results")
         except PostProcessingError as exc:
             logger.warning(str(exc))
             raise HTTPException(status_code=exc.http_status_code, detail=str(exc))

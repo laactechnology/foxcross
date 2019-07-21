@@ -54,6 +54,7 @@ class DataFrameModelServing(ModelServing):
     ) -> Union[pandas.DataFrame, Dict[str, pandas.DataFrame]]:
         try:
             if data.pop("multi_dataframe", None) is True:
+                logger.debug("Formatting pandas multi_dataframe input")
                 return {key: pandas.DataFrame(value) for key, value in data.items()}
             else:
                 return pandas.DataFrame(data)
@@ -77,6 +78,7 @@ class DataFrameModelServing(ModelServing):
                     for key, value in results.items()
                 }
                 output["multi_dataframe"] = True
+                logger.debug("Formatted multi_dataframe output")
             except (TypeError, AttributeError):
                 err_msg = f"Failed to format prediction results"
                 logger.exception(err_msg)
