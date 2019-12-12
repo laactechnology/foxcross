@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "foxcross"
-version = "0.8.0"
+version = "0.9.0"
 description = "AsyncIO serving for data science models"
 authors = ["Steven Pate <steven@laac.dev>"]
 license = "BSD-3-Clause"
@@ -47,8 +47,8 @@ jinja2 = "^2.10"
 ujson = {version = "^1.35", optional = true}
 modin = {version = "^0.5.1", optional = true}
 pandas = {version = "^0.24.2", optional = true}
-uvicorn = "^0.8.3"
-starlette = "^0.12.2"
+uvicorn = "^0.10.0"
+starlette = "^0.13.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^1.16"

@@ -1,5 +1,7 @@
-## Next Release
+## 0.9.0
 * Added debug logging
+* Upgraded Starlette and Uvicorn versions
+* Added base exception for custom exceptions
 
 ## 0.8.0
 * Added download form for `input-format` and `predict-test` endpoints

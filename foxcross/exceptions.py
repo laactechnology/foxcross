@@ -1,18 +1,22 @@
-class NoModelServingFoundError(Exception):
+class FoxcrossException(Exception):
     pass
 
 
-class PredictionError(Exception):
-    http_status_code = 400
-
-
-class TestDataPathUndefinedError(Exception):
+class NoModelServingFoundError(FoxcrossException):
     pass
 
 
-class PreProcessingError(Exception):
+class PredictionError(FoxcrossException):
     http_status_code = 400
 
 
-class PostProcessingError(Exception):
+class TestDataPathUndefinedError(FoxcrossException):
+    pass
+
+
+class PreProcessingError(FoxcrossException):
+    http_status_code = 400
+
+
+class PostProcessingError(FoxcrossException):
     http_status_code = 500
