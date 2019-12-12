@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
     
     
       
@@ -46,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.0284f74d.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.1b62728e.css">
       
-        <link rel="stylesheet" href="../assets/stylesheets/application-palette.01803549.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
       
       
         
@@ -57,12 +57,12 @@
       
     
     
-      <script src="../assets/javascripts/modernizr.74668098.js"></script>
+      <script src="../assets/javascripts/modernizr.268332fc.js"></script>
     
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
@@ -183,7 +183,7 @@
         
       
       
-      <main class="md-main">
+      <main class="md-main" role="main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -291,28 +291,28 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#debugging-mode" title="Debugging Mode" class="md-nav__link">
+  <a href="#debugging-mode" class="md-nav__link">
     Debugging Mode
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#changing-the-serving-module-name" title="Changing the serving module name" class="md-nav__link">
+  <a href="#changing-the-serving-module-name" class="md-nav__link">
     Changing the serving module name
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#requiring-https-connections" title="Requiring HTTPS connections" class="md-nav__link">
+  <a href="#requiring-https-connections" class="md-nav__link">
     Requiring HTTPS connections
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#improving-performance" title="Improving performance" class="md-nav__link">
+  <a href="#improving-performance" class="md-nav__link">
     Improving performance
   </a>
   
@@ -320,14 +320,14 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ujson" title="UJSON" class="md-nav__link">
+  <a href="#ujson" class="md-nav__link">
     UJSON
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#modin" title="Modin" class="md-nav__link">
+  <a href="#modin" class="md-nav__link">
     Modin
   </a>
   
@@ -339,7 +339,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#overriding-the-http-status-code-in-custom-exceptions" title="Overriding the HTTP status code in custom exceptions" class="md-nav__link">
+  <a href="#overriding-the-http-status-code-in-custom-exceptions" class="md-nav__link">
     Overriding the HTTP status code in custom exceptions
   </a>
   
@@ -413,28 +413,28 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#debugging-mode" title="Debugging Mode" class="md-nav__link">
+  <a href="#debugging-mode" class="md-nav__link">
     Debugging Mode
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#changing-the-serving-module-name" title="Changing the serving module name" class="md-nav__link">
+  <a href="#changing-the-serving-module-name" class="md-nav__link">
     Changing the serving module name
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#requiring-https-connections" title="Requiring HTTPS connections" class="md-nav__link">
+  <a href="#requiring-https-connections" class="md-nav__link">
     Requiring HTTPS connections
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#improving-performance" title="Improving performance" class="md-nav__link">
+  <a href="#improving-performance" class="md-nav__link">
     Improving performance
   </a>
   
@@ -442,14 +442,14 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ujson" title="UJSON" class="md-nav__link">
+  <a href="#ujson" class="md-nav__link">
     UJSON
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#modin" title="Modin" class="md-nav__link">
+  <a href="#modin" class="md-nav__link">
     Modin
   </a>
   
@@ -461,7 +461,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#overriding-the-http-status-code-in-custom-exceptions" title="Overriding the HTTP status code in custom exceptions" class="md-nav__link">
+  <a href="#overriding-the-http-status-code-in-custom-exceptions" class="md-nav__link">
     Overriding the HTTP status code in custom exceptions
   </a>
   
@@ -491,14 +491,14 @@
 <p><strong>WARNING: this should not be enabled in production</strong></p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">foxcross.serving</span> <span class="kn">import</span> <span class="n">run_model_serving</span>
 
-<span class="n">run_model_serving</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">run_model_serving</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
 
 <p>or</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">foxcross.serving</span> <span class="kn">import</span> <span class="n">compose_models</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">compose_models</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">compose_models</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
 
@@ -530,14 +530,14 @@ running the serving.</p>
 encrypted via HTTPS</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">foxcross.serving</span> <span class="kn">import</span> <span class="n">run_model_serving</span>
 
-<span class="n">run_model_serving</span><span class="p">(</span><span class="n">redirect_https</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">run_model_serving</span><span class="p">(</span><span class="n">redirect_https</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
 
 <p>or</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">foxcross.serving</span> <span class="kn">import</span> <span class="n">compose_models</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">compose_models</span><span class="p">(</span><span class="n">redirect_https</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">compose_models</span><span class="p">(</span><span class="n">redirect_https</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
 
@@ -572,12 +572,13 @@ overridden using the <code>http_status_code</code> class attribute</p>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="n">new_exc</span> <span class="o">=</span> <span class="n">PredictionError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to do prediction: {exc}&quot;</span><span class="p">)</span>
+            <span class="n">new_exc</span> <span class="o">=</span> <span class="n">PredictionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to do prediction: </span><span class="si">{exc}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">new_exc</span><span class="o">.</span><span class="n">http_status_code</span> <span class="o">=</span> <span class="mi">500</span>
             <span class="k">raise</span> <span class="n">new_exc</span>
 </pre></div>
                 
                   
+                
                 
               
               
@@ -645,7 +646,7 @@ overridden using the <code>http_status_code</code> class attribute</p>
       
     </div>
     
-      <script src="../assets/javascripts/application.245445c6.js"></script>
+      <script src="../assets/javascripts/application.808e90bb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
