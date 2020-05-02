@@ -8,7 +8,7 @@
 
 AsyncIO serving for data science models built on [Starlette](https://www.starlette.io/)
 
-**Requirements**: Python 3.6+
+**Requirements**: Python 3.6.1+
 
 ## Quick Start
 Installation using `pip`:
