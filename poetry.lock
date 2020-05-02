@@ -9,6 +9,7 @@ version = "0.5.0"
 [[package]]
 category = "dev"
 description = "Async http client/server framework (asyncio)"
+marker = "sys_platform != \"win32\""
 name = "aiohttp"
 optional = false
 python-versions = ">=3.5.3"
@@ -43,6 +44,7 @@ version = "1.4.3"
 [[package]]
 category = "dev"
 description = "Timeout context manager for asyncio programs"
+marker = "sys_platform != \"win32\""
 name = "async-timeout"
 optional = false
 python-versions = ">=3.5.3"
@@ -74,6 +76,7 @@ tests = ["coverage", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.i
 [[package]]
 category = "dev"
 description = "Screen-scraping library"
+marker = "sys_platform != \"win32\""
 name = "beautifulsoup4"
 optional = false
 python-versions = "*"
@@ -121,6 +124,7 @@ version = "7.1.2"
 [[package]]
 category = "dev"
 description = "Cross-platform colored terminal text."
+marker = "sys_platform == \"win32\" or sys_platform != \"win32\""
 name = "colorama"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
@@ -164,6 +168,7 @@ version = "0.18.2"
 [[package]]
 category = "dev"
 description = "Python bindings to the Google search engine."
+marker = "sys_platform != \"win32\""
 name = "google"
 optional = false
 python-versions = "*"
@@ -175,6 +180,7 @@ beautifulsoup4 = "*"
 [[package]]
 category = "dev"
 description = "HTTP/2-based RPC framework"
+marker = "sys_platform != \"win32\""
 name = "grpcio"
 optional = false
 python-versions = "*"
@@ -225,7 +231,7 @@ version = "2.9"
 [[package]]
 category = "dev"
 description = "Patch ssl.match_hostname for Unicode(idna) domains support"
-marker = "python_version < \"3.7\""
+marker = "sys_platform != \"win32\" and python_version < \"3.7\""
 name = "idna-ssl"
 optional = false
 python-versions = "*"
@@ -237,7 +243,7 @@ idna = ">=2.0"
 [[package]]
 category = "dev"
 description = "Read metadata from Python packages"
-marker = "python_version < \"3.8\""
+marker = "python_version < \"3.8\" or sys_platform != \"win32\" and python_version < \"3.8\""
 name = "importlib-metadata"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
@@ -296,6 +302,7 @@ version = "0.14.1"
 [[package]]
 category = "dev"
 description = "An implementation of JSON Schema validation for Python"
+marker = "sys_platform != \"win32\""
 name = "jsonschema"
 optional = false
 python-versions = "*"
@@ -442,6 +449,7 @@ version = "8.2.0"
 [[package]]
 category = "dev"
 description = "multidict implementation"
+marker = "sys_platform != \"win32\""
 name = "multidict"
 optional = false
 python-versions = ">=3.5"
@@ -556,6 +564,7 @@ version = "*"
 [[package]]
 category = "dev"
 description = "Protocol Buffers"
+marker = "sys_platform != \"win32\""
 name = "protobuf"
 optional = false
 python-versions = "*"
@@ -576,6 +585,7 @@ version = "1.8.1"
 [[package]]
 category = "dev"
 description = "A Sampling Profiler for Python"
+marker = "sys_platform != \"win32\""
 name = "py-spy"
 optional = false
 python-versions = "*"
@@ -584,6 +594,7 @@ version = "0.3.3"
 [[package]]
 category = "dev"
 description = "Python library for Apache Arrow"
+marker = "sys_platform != \"win32\""
 name = "pyarrow"
 optional = false
 python-versions = ">=3.5"
@@ -622,6 +633,7 @@ version = "2.4.7"
 [[package]]
 category = "dev"
 description = "Persistent/Functional/Immutable data structures"
+marker = "sys_platform != \"win32\""
 name = "pyrsistent"
 optional = false
 python-versions = "*"
@@ -719,6 +731,7 @@ version = "5.3.1"
 [[package]]
 category = "dev"
 description = "A system for parallel and distributed Python that unifies the ML ecosystem."
+marker = "sys_platform != \"win32\""
 name = "ray"
 optional = false
 python-versions = "*"
@@ -749,6 +762,7 @@ tune = ["tabulate", "tensorboardx", "pandas"]
 [[package]]
 category = "dev"
 description = "Python client for Redis key-value store"
+marker = "sys_platform != \"win32\""
 name = "redis"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
@@ -794,6 +808,7 @@ version = "1.14.0"
 [[package]]
 category = "dev"
 description = "A modern CSS selector implementation for Beautiful Soup."
+marker = "sys_platform != \"win32\""
 name = "soupsieve"
 optional = false
 python-versions = "*"
@@ -856,7 +871,7 @@ dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
 [[package]]
 category = "dev"
 description = "Backported and Experimental Type Hints for Python 3.5+"
-marker = "python_version < \"3.7\""
+marker = "sys_platform != \"win32\" and python_version < \"3.7\""
 name = "typing-extensions"
 optional = false
 python-versions = "*"
@@ -963,6 +978,7 @@ version = "8.1"
 [[package]]
 category = "dev"
 description = "Yet another URL library"
+marker = "sys_platform != \"win32\""
 name = "yarl"
 optional = false
 python-versions = ">=3.5"
@@ -975,7 +991,7 @@ multidict = ">=4.0"
 [[package]]
 category = "dev"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-marker = "python_version < \"3.8\""
+marker = "python_version < \"3.8\" or sys_platform != \"win32\" and python_version < \"3.8\""
 name = "zipp"
 optional = false
 python-versions = ">=3.6"
@@ -991,7 +1007,7 @@ pandas = ["pandas"]
 ujson = ["ujson"]
 
 [metadata]
-content-hash = "8ea94b3f8ca26b0b5e687dd841671e94859029127eadcc276e92afbc7d35dbe5"
+content-hash = "80b3b3fa13fc621e7a680356463cd6854c990ace3955f1ff1eac6248256b66a9"
 python-versions = "^3.6.1"
 
 [metadata.files]
