@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "foxcross"
-version = "0.9.0"
+version = "0.10.0"
 description = "AsyncIO serving for data science models"
 authors = ["Steven Pate <steven@laac.dev>"]
 license = "BSD-3-Clause"
@@ -29,6 +29,7 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Environment :: Web Environment",
     "Development Status :: 3 - Alpha",
     "Operating System :: OS Independent",
@@ -40,27 +41,26 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
-python-slugify = {version = "^3.0", extras = ["unidecode"]}
-aiofiles = "^0.4.0"
+python = "^3.6.1"
+python-slugify = {version = "^4.0", extras = ["unidecode"]}
+aiofiles = "^0.5.0"
 jinja2 = "^2.10"
-ujson = {version = "^1.35", optional = true}
-modin = {version = "^0.5.1", optional = true}
-pandas = {version = "^0.24.2", optional = true}
-uvicorn = "^0.10.0"
+ujson = {version = "^2.0", optional = true}
+modin = {version = "^0.7.0", optional = true}
+pandas = {version = "^1.0.0", optional = true}
+uvicorn = "^0.11.0"
 starlette = "^0.13.0"
 
 [tool.poetry.dev-dependencies]
-pre-commit = "^1.16"
+pre-commit = "^2.0"
 mkdocs = "^1.0"
-mkdocs-material = "^4.3"
-pytest = "^4.5"
+mkdocs-material = "^5.0"
+pytest = "^5.0"
 pygments = "^2.4"
-pymdown-extensions = "^6.0"
+pymdown-extensions = "^7.0"
 requests = "^2.22"
-coverage = "^4.5"
 pytest-cov = "^2.7"
-tomlkit = "^0.5.3"
+tomlkit = "^0.6.0"
 
 [tool.poetry.extras]
 modin = ["modin"]

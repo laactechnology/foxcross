@@ -1,3 +1,9 @@
+## 0.10.0
+* Upgraded package versions
+* Updated required Python to 3.6.1
+* Upgraded pre-commit hook versions
+* Added Python 3.8 to testing suite
+
 ## 0.9.0
 * Added debug logging
 * Upgraded Starlette and Uvicorn versions

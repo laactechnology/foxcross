@@ -97,7 +97,7 @@ class ModelServing(Starlette):
         try:
             return json.loads(contents.decode("utf-8"))
         except (TypeError, ValueError):
-            err_msg = f"Failed to load test data into JSON"
+            err_msg = "Failed to load test data into JSON"
             logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
 
@@ -243,7 +243,7 @@ class ModelServing(Starlette):
             else:
                 return JSONResponse(data)
         except (TypeError, ValueError):
-            err_msg = f"Error trying to serialize response data to JSON"
+            err_msg = "Error trying to serialize response data to JSON"
             logger.exception(err_msg)
             raise HTTPException(status_code=500, detail=err_msg)
 

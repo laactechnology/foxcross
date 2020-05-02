@@ -15,8 +15,8 @@ except ImportError:
         import numpy
     except ImportError:
         raise ImportError(
-            f"Cannot import pandas. Please install foxcross using foxcross[pandas] or"
-            f" foxcross[modin]"
+            "Cannot import pandas. Please install foxcross using foxcross[pandas] or"
+            " foxcross[modin]"
         )
 
 logger = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class DataFrameModelServing(ModelServing):
                 output["multi_dataframe"] = True
                 logger.debug("Formatted multi_dataframe output")
             except (TypeError, AttributeError):
-                err_msg = f"Failed to format prediction results"
+                err_msg = "Failed to format prediction results"
                 logger.exception(err_msg)
                 raise HTTPException(status_code=500, detail=err_msg)
         return output

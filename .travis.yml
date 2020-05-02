@@ -19,7 +19,7 @@ cache:
 jobs:
   include:
     - stage: lint
-      python: "3.7"
+      python: "3.8"
       install:
         - pip install pre-commit
         - pre-commit install-hooks
@@ -28,6 +28,13 @@ jobs:
     - stage: test
       python: "3.7"
       name: "No extras 3.7"
+      install:
+        - pip install poetry
+        - poetry install
+      script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_no_extra.py --cov=foxcross
+    - stage: test
+      python: "3.8"
+      name: "No extras 3.8"
       install:
         - pip install poetry
         - poetry install
@@ -54,6 +61,13 @@ jobs:
         - poetry install -E pandas
       script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_pandas_extra.py tests/test_pandas_serving.py --cov=foxcross
     - stage: test
+      python: "3.8"
+      name: "Pandas 3.8"
+      install:
+        - pip install poetry
+        - poetry install -E pandas
+      script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_pandas_extra.py tests/test_pandas_serving.py --cov=foxcross
+    - stage: test
       python: "3.6"
       name: "UJSON 3.6"
       install:
@@ -68,6 +82,13 @@ jobs:
         - poetry install -E ujson
       script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_ujson_extra.py --cov=foxcross
     - stage: test
+      python: "3.8"
+      name: "UJSON 3.8"
+      install:
+        - pip install poetry
+        - poetry install -E ujson
+      script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_ujson_extra.py --cov=foxcross
+    - stage: test
       python: "3.6"
       name: "Modin 3.6"
       install:
@@ -77,6 +98,13 @@ jobs:
     - stage: test
       python: "3.7"
       name: "Modin 3.7"
+      install:
+        - pip install poetry
+        - poetry install -E modin
+      script: pytest tests/test_serving.py tests/test_failed_serving.py tests/test_modin_extra.py tests/test_pandas_serving.py --cov=foxcross
+    - stage: test
+      python: "3.8"
+      name: "Modin 3.8"
       install:
         - pip install poetry
         - poetry install -E modin

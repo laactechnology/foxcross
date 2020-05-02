@@ -20,8 +20,8 @@ except ImportError:
         import pandas
     except ImportError:
         raise ImportError(
-            f"Cannot import pandas. Please install foxcross using foxcross[pandas] or"
-            f" foxcross[modin]"
+            "Cannot import pandas. Please install foxcross using foxcross[pandas] or"
+            " foxcross[modin]"
         )
 
 try:
