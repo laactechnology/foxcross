@@ -62,6 +62,7 @@ requests = "^2.22"
 pytest-cov = "^2.7"
 tomlkit = "^0.6.0"
 ray = "^0.8.4"
+pyarrow = "^0.17.0"
 
 [tool.poetry.extras]
 modin = ["modin"]
